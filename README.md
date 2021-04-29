@@ -32,10 +32,11 @@ extractor.createSvelteParser()
 const messages = extractor.getMessages();
 ```
 From the following svelte file named `src/App.svelte`:
-```
+```sveltehtml
 <script lang="ts">
     import { _ } from './translator-function';
     import Component from './Component.svelte';
+    export let place: string;
     let caption = _('FooCaption', 'Context', {comment: 'Comment', path: 'https://www.example.com'});
 </script>
 
@@ -48,7 +49,8 @@ From the following svelte file named `src/App.svelte`:
             {_(
                 'Hello {PLACE}', 
                 'Context', 
-                {comment: 'Multiline\nComment', props: {PLACE: 'The place where you are'}}
+                {comment: 'Multiline\nComment', props: {PLACE: 'The place where you are'}},
+                {PLACE: place}
             )}
         </Component>
     {/each}
@@ -65,13 +67,13 @@ m = [
             'path: https://www.example.com'
         ],
         references: [
-            'src/App.svelte:4'
+            'src/App.svelte:5'
         ],
     },
     {
         text: 'Foo',
         references: [
-            'src/App.svelte:9'
+            'src/App.svelte:10'
         ],
     },
     {
@@ -81,7 +83,7 @@ m = [
             'Comment',
         ],
         references: [
-            'src/App.svelte:10'
+            'src/App.svelte:11'
         ],
     },
     {
@@ -91,7 +93,7 @@ m = [
             'Comment',
         ],
         references: [
-            'src/App.svelte:10'
+            'src/App.svelte:11'
         ],
     },
     {
@@ -101,7 +103,7 @@ m = [
             'Comment',
         ],
         references: [
-            'src/App.svelte:12'
+            'src/App.svelte:13'
         ],
     },
     {
@@ -113,7 +115,7 @@ m = [
             '{PLACE}: The place where you are'
         ],
         references: [
-            'src/App.svelte:13'
+            'src/App.svelte:14'
         ],
     },
 ]

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { _ } from './translator-function';
     import Component from './Component.svelte';
+    export let place: string;
     let caption = _('FooCaption', 'Context', {comment: 'Comment', path: 'https://www.example.com'});
 </script>
 
@@ -13,7 +14,8 @@
             {_(
                 'Hello {PLACE}',
                 'Context',
-                {comment: 'Multiline\nComment', props: {PLACE: 'The place where you are'}}
+                {comment: 'Multiline\nComment', props: {PLACE: 'The place where you are'}},
+                {PLACE: place}
             )}
         </Component>
     {/each}
