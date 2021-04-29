@@ -10,7 +10,11 @@
     {#each [_('Bar', 'Context', 'Comment'), _('Baz', 'Context', {comment: 'Comment'})] as text}
         <p>{text}</p>
         <Component label="{_('Bax', 'Context', {comment: 'Comment'})}">
-            {_('Hello {PLACE}', 'Context', {comment: 'Multiline\nComment', props: {PLACE: 'The place where you are'}})}
+            {_(
+                'Hello {PLACE}',
+                'Context',
+                {comment: 'Multiline\nComment', props: {PLACE: 'The place where you are'}}
+            )}
         </Component>
     {/each}
 </body>
