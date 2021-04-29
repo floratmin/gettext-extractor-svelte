@@ -2,7 +2,11 @@
     import { _ } from './translator-function';
     import Component from './Component.svelte';
     export let place: string;
-    let caption = _('FooCaption', 'Context', {comment: 'Comment', path: 'https://www.example.com'});
+    let caption = _(
+        'FooCaption',
+        'Context',
+        {comment: 'Comment', path: 'https://www.example.com'}
+    );
 </script>
 
 <body>

@@ -37,7 +37,11 @@ From the following svelte file named `src/App.svelte`:
     import { _ } from './translator-function';
     import Component from './Component.svelte';
     export let place: string;
-    let caption = _('FooCaption', 'Context', {comment: 'Comment', path: 'https://www.example.com'});
+    let caption = _(
+        'FooCaption', 
+        'Context', 
+        {comment: 'Comment', path: 'https://www.example.com'}
+    );
 </script>
 
 <body>
@@ -57,8 +61,8 @@ From the following svelte file named `src/App.svelte`:
 </body>
 ```
 we extract the following messages:
-```ts
-m = [
+```js
+[
     {
         text: 'FooCaption',
         context: 'Context',
@@ -73,7 +77,7 @@ m = [
     {
         text: 'Foo',
         references: [
-            'src/App.svelte:10'
+            'src/App.svelte:14'
         ],
     },
     {
@@ -83,7 +87,7 @@ m = [
             'Comment',
         ],
         references: [
-            'src/App.svelte:11'
+            'src/App.svelte:15'
         ],
     },
     {
@@ -93,7 +97,7 @@ m = [
             'Comment',
         ],
         references: [
-            'src/App.svelte:11'
+            'src/App.svelte:15'
         ],
     },
     {
@@ -103,7 +107,7 @@ m = [
             'Comment',
         ],
         references: [
-            'src/App.svelte:13'
+            'src/App.svelte:17'
         ],
     },
     {
@@ -115,7 +119,7 @@ m = [
             '{PLACE}: The place where you are'
         ],
         references: [
-            'src/App.svelte:14'
+            'src/App.svelte:18'
         ],
     },
 ]

@@ -463,7 +463,7 @@ describe('Extract translation functions to gettext', () => {
                 textPlural: null,
                 context: null,
                 references: [
-                    'tests/Readme.svelte:10'
+                    'tests/Readme.svelte:14'
                 ],
                 comments: []
             },
@@ -475,7 +475,7 @@ describe('Extract translation functions to gettext', () => {
                     'Comment'
                 ],
                 references: [
-                    'tests/Readme.svelte:11'
+                    'tests/Readme.svelte:15'
                 ]
             },
             {
@@ -486,7 +486,7 @@ describe('Extract translation functions to gettext', () => {
                     'Comment'
                 ],
                 references: [
-                    'tests/Readme.svelte:11'
+                    'tests/Readme.svelte:15'
                 ]
             },
             {
@@ -497,7 +497,7 @@ describe('Extract translation functions to gettext', () => {
                     'Comment'
                 ],
                 references: [
-                    'tests/Readme.svelte:13'
+                    'tests/Readme.svelte:17'
                 ]
             },
             {
@@ -510,7 +510,7 @@ describe('Extract translation functions to gettext', () => {
                     '{PLACE}: The place where you are'
                 ],
                 references: [
-                    'tests/Readme.svelte:14'
+                    'tests/Readme.svelte:18'
                 ]
             }
         ]));
