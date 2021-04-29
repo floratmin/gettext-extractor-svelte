@@ -1,9 +1,5 @@
 # [gettext-extractor](https://github.com/lukasgeiter/gettext-extractor) for svelte files
 
-### Installation
-
-npm install @floratmin/gettext-extractor-svelte
-
 ### Usage:
 
 ```ts
