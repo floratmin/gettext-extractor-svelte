@@ -1,0 +1,13 @@
+{
+    "transform": {
+        ".ts": "ts-jest"
+    },
+    "testRegex": ".*\\.test\\.ts$",
+    "roots": [
+        "<rootDir>/tests"
+    ],
+    "moduleFileExtensions": [
+        "js",
+        "ts"
+    ]
+}
