@@ -5,7 +5,7 @@ import { Parser, IParseOptions } from 'gettext-extractor/dist/parser';
 export abstract class SParser<TExtractorFunction extends Function, TParseOptions extends IParseOptions> extends Parser<TExtractorFunction, TParseOptions> {
 
     public parseString(source: string, fileName?: string, options?: IParseOptions): this {
-        const { scriptInHTMLFragments, script } = svelteFragmentDivider(source);
+        const { scriptInHTMLFragments, script } = svelteFragmentDivider(source, fileName);
         [
             ...(script ? [script] : []),
             ...(scriptInHTMLFragments ? scriptInHTMLFragments : [])

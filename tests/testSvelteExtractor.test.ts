@@ -403,7 +403,7 @@ describe('Extract translation functions to gettext', () => {
             }
         ]));
     });
-    test('Read file with glob', () => {
+    test('Read files with glob', () => {
         const options: ICustomJsExtractorOptions = {
             arguments: {
                 text: 0,
@@ -420,7 +420,7 @@ describe('Extract translation functions to gettext', () => {
         const extractor = new SvelteGettextExtractor();
         extractor.createSvelteParser()
             .addExtractor(callExpressionExtractor('_', options))
-            .parseFilesGlob('**/*.svelte');
+            .parseFilesGlob('**/[!Error]*.svelte');
         const messages = sortMessages(extractor.getMessages());
 
         console.log(messages);
@@ -514,5 +514,25 @@ describe('Extract translation functions to gettext', () => {
                 ]
             }
         ]));
+    });
+    test('Throw error on file Error.svelte', () => {
+        const options: ICustomJsExtractorOptions = {
+            arguments: {
+                text: 0,
+                context: 1,
+                comments: 2
+            },
+            comments: {
+                commentString: 'comment',
+                props: {
+                    props: ['{', '}']
+                }
+            }
+        };
+        expect( () => new SvelteGettextExtractor()
+            .createSvelteParser()
+            .addExtractor(callExpressionExtractor('_', options))
+            .parseFile(`tests/Error.svelte`)
+        ).toThrow();
     });
 });
