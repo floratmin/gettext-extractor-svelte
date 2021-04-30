@@ -7,7 +7,7 @@ import {
     SvelteGettextExtractor, 
     callExpressionExtractor, 
     ICustomJsExtractorOptions 
-} from '@floratmin/gettext-extractor-svelte';
+} from './src/index';
 
 const extractor = new SvelteGettextExtractor();
 
