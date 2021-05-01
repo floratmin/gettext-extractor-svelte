@@ -1,36 +1,52 @@
 import * as ts from 'typescript';
-import { SParser } from '../parser';
+import { IAddFunctionCallBack, Parser } from '../parser';
 import { IAddMessageCallback, IParseOptions } from 'gettext-extractor/dist/parser';
 import { IMessage } from 'gettext-extractor/dist/builder';
+import { ISvelteParseOptions } from '../parser';
+import { IFunction, IParsed } from '../builder';
 
-export type IJsExtractorFunction = (node: ts.Node, sourceFile: ts.SourceFile, addMessage: IAddMessageCallback) => void;
+export type IJsExtractorFunction = (node: ts.Node, sourceFile: ts.SourceFile, addMessage: IAddMessageCallback, addFunction?: IAddFunctionCallBack) => void;
 
-export interface IJsParseOptions extends IParseOptions {
+export interface ISvelteJsParseOptions extends ISvelteParseOptions {
     scriptKind?: ts.ScriptKind;
 }
 
-export class SvelteParser extends SParser<IJsExtractorFunction, IJsParseOptions> {
+export class SvelteParser extends Parser<IJsExtractorFunction, ISvelteJsParseOptions> {
 
-    protected parse(source: string, fileName: string, options: IJsParseOptions = {}): IMessage[] {
+    protected parse(source: string, fileName: string, options: ISvelteJsParseOptions = {}): IParsed {
         let sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, options.scriptKind);
-        return this.parseNode(sourceFile, sourceFile, options.lineNumberStart || 1);
+        return this.parseNode(sourceFile, sourceFile, options.lineNumberStart || 1, options.startChar || 0, source);
     }
 
-    protected parseNode(node: ts.Node, sourceFile: ts.SourceFile, lineNumberStart: number): IMessage[] {
-        let messages: IMessage[] = [];
-        let addMessageCallback = SParser.createAddMessageCallback(messages, sourceFile.fileName, () => {
+    protected parseNode(node: ts.Node, sourceFile: ts.SourceFile, lineNumberStart: number, startChar: number, source: string): IParsed {
+        let parsed: IParsed = {
+            messages: [],
+            functionsData: []
+        };
+
+        let addMessageCallback = Parser.createAddMessageCallback(parsed.messages, sourceFile.fileName, () => {
             let location = sourceFile.getLineAndCharacterOfPosition(node.getStart());
             return lineNumberStart + location.line;
         });
 
+        let addFunctionCallback = Parser.createAddFunctionCallback(parsed.functionsData, sourceFile.fileName, () => {
+            return {
+                startChar: startChar + node.pos,
+                endChar: startChar + node.end,
+                functionString: source.slice(startChar + node.pos, startChar + node.end)
+            };
+        });
+
         for (let extractor of this.extractors) {
-            extractor(node, sourceFile, addMessageCallback);
+            extractor(node, sourceFile, addMessageCallback, addFunctionCallback);
         }
 
         ts.forEachChild(node, n => {
-            messages = messages.concat(this.parseNode(n, sourceFile, lineNumberStart));
+            const {messages, functionsData } = this.parseNode(n, sourceFile, lineNumberStart, startChar, source);
+            parsed.messages = parsed.messages.concat(messages);
+            parsed.functionsData = parsed.functionsData.concat(functionsData);
         });
 
-        return messages;
+        return parsed;
     }
 }

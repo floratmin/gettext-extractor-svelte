@@ -22,7 +22,7 @@ function getMessagesFromExtractor(svelteFile: string, options: ICustomJsExtracto
     const extractor = new SvelteGettextExtractor();
     extractor.createSvelteParser()
         .addExtractor(callExpressionExtractor('_', options))
-        .parseString(svelteFile, 'src/App.svelte');
+        .parseSvelteString(svelteFile, 'src/App.svelte');
     return sortMessages(extractor.getMessages());
 }
 

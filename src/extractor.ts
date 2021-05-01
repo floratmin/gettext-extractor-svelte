@@ -7,6 +7,7 @@ import { HtmlParser, IHtmlExtractorFunction } from 'gettext-extractor/dist/html/
 import { StatsOutput } from 'gettext-extractor/dist/utils/output';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { SvelteParser } from './svelte/parser';
+import { FunctionBuilder, IFunctionDict, IFunction } from './builder';
 
 export interface IGettextExtractorStats {
     numberOfMessages: number;
@@ -28,10 +29,12 @@ export class SvelteGettextExtractor {
         numberOfParsedFilesWithMessages: 0
     };
 
-    private builder: CatalogBuilder;
+    private readonly builder: CatalogBuilder;
+    private readonly functionBuilder: FunctionBuilder;
 
     constructor() {
         this.builder = new CatalogBuilder(this.stats);
+        this.functionBuilder = new FunctionBuilder();
     }
 
     public createJsParser(extractors?: IJsExtractorFunction[]): JsParser {
@@ -48,7 +51,7 @@ export class SvelteGettextExtractor {
 
     public createSvelteParser(extractors?: IJsExtractorFunction[]): SvelteParser {
         Validate.optional.nonEmptyArray({extractors});
-        return new SvelteParser(this.builder, extractors, this.stats);
+        return new SvelteParser(this.builder, this.functionBuilder, extractors, this.stats);
     }
 
     public addMessage(message: IMessage): void {
@@ -71,6 +74,18 @@ export class SvelteGettextExtractor {
 
     public getMessagesByContext(context: string): IMessage[] {
         return this.builder.getMessagesByContext(context);
+    }
+
+    public addFunctions(functionData: IFunction): void {
+        this.functionBuilder.addFunction(functionData);
+    }
+
+    public getFunctions(): IFunctionDict {
+        return this.functionBuilder.getFunctions();
+    }
+
+    public getFunctionsByFileName(fileName: string): IFunctionDict {
+        return this.functionBuilder.getFunctionsByFileName(fileName);
     }
 
     public getPotString(headers: Partial<pofile.IHeaders> = {}): string {
@@ -98,6 +113,25 @@ export class SvelteGettextExtractor {
 
         return new Promise((resolve, reject) => {
             fs.writeFile(fileName, this.getPotString(headers), (error) => {
+                if (error) {
+                    return reject(error);
+                }
+                // @ts-ignore
+                resolve();
+            });
+        });
+    }
+
+    public saveFunctionJSON(fileName: string): void {
+        Validate.required.nonEmptyString({fileName});
+        fs.writeFileSync(fileName, JSON.stringify(this.getFunctions()));
+    }
+
+    public saveFunctionJSONAsync(fileName: string): Promise<any> {
+        Validate.required.nonEmptyString({fileName});
+
+        return new Promise((resolve, reject) => {
+            fs.writeFile(fileName, JSON.stringify(this.getFunctions()), (error) => {
                 if (error) {
                     return reject(error);
                 }
