@@ -11,7 +11,7 @@ import {
     SvelteGettextExtractor, 
     callExpressionExtractor, 
     ICustomJsExtractorOptions 
-} from 'svelte-gettext-extractor';
+} from 'gettext-extractor-svelte';
 
 const extractor = new SvelteGettextExtractor();
 
