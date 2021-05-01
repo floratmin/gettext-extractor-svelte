@@ -1,5 +1,5 @@
 {
-  "name": "@floratmin/gettext-extractor-svelte",
+  "name": "gettext-extractor-svelte",
   "version": "1.0.0",
   "description": "gettext-extractor for svelte files",
   "main": "dist/index.js",
