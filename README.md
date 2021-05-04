@@ -209,7 +209,7 @@ and the following functions:
         return 'I am translated';
     }`,
             identifier: 'translatorFunction',
-            declaration: true,
+            definition: true, // extracted translation function
             startChar: 26,
             endChar: 95
         }

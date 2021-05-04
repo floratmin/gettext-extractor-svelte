@@ -134,7 +134,7 @@ export function callExpressionExtractor(calleeName: string | string[], options: 
                                     startChar: slice.pos + diff,
                                     endChar: slice.end,
                                     fileName: sourceFile.fileName,
-                                    declaration: true,
+                                    definition: true,
                                     ...(translatorFunction.identifier !== undefined ? {identifier: translatorFunction.identifier} : {})
                                 };
                                 addFunction(functionData);

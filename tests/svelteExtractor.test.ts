@@ -714,7 +714,7 @@ describe('Extract translation functions to gettext and to function dict', () => 
                     }
                     `,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 17,
                     endChar: 88
                 }
@@ -758,7 +758,7 @@ describe('Extract translation functions to gettext and to function dict', () => 
                     }
                     `,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 41,
                     endChar: 111
                 },
@@ -769,7 +769,7 @@ describe('Extract translation functions to gettext and to function dict', () => 
                     }
                     `,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 35,
                     endChar: 111
                 }
@@ -836,7 +836,7 @@ let Foo2 = class Bar2 {
         return a;
     }`,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 61,
                     endChar: 109
                 },
@@ -846,14 +846,14 @@ let Foo2 = class Bar2 {
         return b;
     }`,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 144,
                     endChar: 197
                 },
                 {
                     functionString: `(c: string): string => c`,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 208,
                     endChar: 232
                 },
@@ -863,7 +863,7 @@ let Foo2 = class Bar2 {
         return d;
     }`,
                     identifier: 'functionIdentifier2',
-                    declaration: true,
+                    definition: true,
                     startChar: 264,
                     endChar: 313
                 }
@@ -911,7 +911,7 @@ let Foo2 = class Bar2 {
         return 'I am translated';
     }`,
                     identifier: 'translatorFunction',
-                    declaration: true,
+                    definition: true,
                     startChar: 26,
                     endChar: 95
                 }
@@ -966,7 +966,7 @@ export class Foo {
         return this.b;
     }`,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 158,
                     endChar: 206
                 },
@@ -976,7 +976,7 @@ export class Foo {
         this.b = b;
     }`,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 231,
                     endChar: 278
                 }
@@ -1026,14 +1026,14 @@ export class Foo {
                     };
                     `,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 0,
                     endChar: 74
                 },
                 {
                     functionString: '$: bar = (baz: string): string => baz;',
                     identifier: 'functionIdentifier2',
-                    declaration: true,
+                    definition: true,
                     startChar: 75,
                     endChar: 113
                 }
@@ -1081,14 +1081,14 @@ export class Foo {
                 {
                     functionString: 'bar: (a: string): string => a',
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 18,
                     endChar: 47
                 },
                 {
                     functionString: 'baz(b: string):string {return b}',
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 70,
                     endChar: 102
                 },
@@ -1098,7 +1098,7 @@ export class Foo {
             return string => c
         }`,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 196,
                     endChar: 263
                 },
@@ -1111,7 +1111,7 @@ export class Foo {
         }
     }`,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 128,
                     endChar: 269
                 },
@@ -1128,7 +1128,7 @@ export class Foo {
     }
 }`,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 12,
                     endChar: 271
                 },
@@ -1145,7 +1145,7 @@ export class Foo {
     }
 }`,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 6,
                     endChar: 271
                 }
@@ -1190,7 +1190,7 @@ export class Foo {
                         }
                     `,
                     identifier: 'functionIdentifier',
-                    declaration: true,
+                    definition: true,
                     startChar: 44,
                     endChar: 123
                 }

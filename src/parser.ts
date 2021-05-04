@@ -13,7 +13,7 @@ export interface IFunctionData {
     fileName?: string;
     startChar?: number;
     endChar?: number;
-    declaration?: true;
+    definition?: true;
     identifier?: string;
 }
 
@@ -72,7 +72,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
                 startChar: <number>data.startChar,
                 endChar: <number>data.endChar,
                 identifier: <string>data.identifier,
-                ...(data.declaration ? {declaration: data.declaration} : {})
+                ...(data.definition ? {definition: data.definition} : {})
             };
 
             functionsData.push(functionData);

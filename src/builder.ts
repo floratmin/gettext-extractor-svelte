@@ -6,7 +6,7 @@ export interface IFunction {
     startChar: number;
     endChar: number;
     identifier?: string;
-    declaration?: true;
+    definition?: true;
 }
 
 export interface IParsed {
@@ -26,7 +26,7 @@ export class FunctionBuilder {
                 startChar: functionData.startChar,
                 endChar: functionData.endChar,
                 identifier: functionData.identifier,
-                ...(functionData.declaration ? {declaration: true} : {})
+                ...(functionData.definition ? {definition: true} : {})
             });
         } else {
             this.context[functionData.fileName] = [
@@ -35,7 +35,7 @@ export class FunctionBuilder {
                     startChar: functionData.startChar,
                     endChar: functionData.endChar,
                     identifier: functionData.identifier,
-                    ...(functionData.declaration ? {declaration: true} : {})
+                    ...(functionData.definition ? {definition: true} : {})
                 }
             ];
         }
