@@ -30,13 +30,13 @@
   "author": "Florian Murat Koch <florian.murat.koch@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@floratmin/gettext-extractor-js-parser": "^2.0.2",
     "@floratmin/svelte-fragment-divider": "^3.1.0",
     "gettext-extractor": "^3.5.3",
     "svelte": "^3.37.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
+    "@types/strip-comments": "^2.0.0",
     "jest": "^26.6.3",
     "ts-jest": "^26.5.5",
     "tslint": "^6.1.3",

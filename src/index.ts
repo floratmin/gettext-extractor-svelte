@@ -1,2 +1,3 @@
 export { SvelteGettextExtractor } from './extractor';
-export { callExpressionExtractor, ICustomJsExtractorOptions } from '@floratmin/gettext-extractor-js-parser';
+export { callExpressionExtractor, ICustomJsExtractorOptions } from './js/extractors/factories/callExpression';
+export { FunctionExtractorBuilder } from './js/extractors/functionExtractors';

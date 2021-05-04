@@ -5,6 +5,8 @@ export interface IFunction {
     fileName: string;
     startChar: number;
     endChar: number;
+    identifier?: string;
+    declaration?: true;
 }
 
 export interface IParsed {
@@ -12,7 +14,7 @@ export interface IParsed {
     functionsData: IFunction[];
 }
 
-export type IFunctionDict = Record<string, Pick<IFunction, 'functionString' | 'startChar' | 'endChar'>[]>;
+export type IFunctionDict = Record<string, Pick<IFunction, 'functionString' | 'startChar' | 'endChar' | 'identifier'>[]>;
 
 export class FunctionBuilder {
     private context: IFunctionDict = {};
@@ -22,14 +24,18 @@ export class FunctionBuilder {
             this.context[functionData.fileName].push({
                 functionString: functionData.functionString,
                 startChar: functionData.startChar,
-                endChar: functionData.endChar
+                endChar: functionData.endChar,
+                identifier: functionData.identifier,
+                ...(functionData.declaration ? {declaration: true} : {})
             });
         } else {
             this.context[functionData.fileName] = [
                 {
                     functionString: functionData.functionString,
                     startChar: functionData.startChar,
-                    endChar: functionData.endChar
+                    endChar: functionData.endChar,
+                    identifier: functionData.identifier,
+                    ...(functionData.declaration ? {declaration: true} : {})
                 }
             ];
         }

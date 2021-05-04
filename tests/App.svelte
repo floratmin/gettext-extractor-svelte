@@ -1,11 +1,11 @@
 <script>
-	import { _ } from './translations';
+	import { t } from './translations';
 	export let name;
-	let greeting = _('Welcome {NAME}', 'app', {comment: 'Welcoming the user', props: {NAME: 'Name of user'}}, {NAME: name});
+	let greeting = t('Welcome {NAME}', 'app', {comment: 'Welcoming the user', props: {NAME: 'Name of user'}}, {NAME: name});
 </script>
 
 <main>
-	<h1>{_('Hello World', 'app', 'Computer is greeting')}!</h1>
+	<h1>{t('Hello World', 'app', 'Computer is greeting')}!</h1>
 	<p>{greeting}</p>
 </main>
 

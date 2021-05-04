@@ -2,28 +2,35 @@ import * as fs from 'fs';
 import * as glob from 'glob';
 
 import { IGettextExtractorStats } from 'gettext-extractor/dist/extractor';
-import { IParseOptions, IMessageData, IAddMessageCallback } from 'gettext-extractor/dist/parser';
+import { IMessageData, IAddMessageCallback } from 'gettext-extractor/dist/parser';
 import { CatalogBuilder, IMessage } from 'gettext-extractor/dist/builder';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { svelteFragmentDivider } from '@floratmin/svelte-fragment-divider';
 import { FunctionBuilder, IFunction, IParsed } from './builder';
 
 export interface IFunctionData {
-    functionString: string;
-    fileName: string;
+    functionString?: string;
+    fileName?: string;
     startChar?: number;
     endChar?: number;
+    declaration?: true;
+    identifier?: string;
 }
 
 export type IAddFunctionCallBack = (data: IFunctionData) => void;
 
-export interface ISvelteParseOptions extends IParseOptions {
+
+export interface IParseOptions {
+    lineNumberStart?: number;
+    transformSource?: (source: string) => string;
     startChar?: number;
 }
 
-export abstract class Parser<TExtractorFunction extends Function, TParseOptions extends ISvelteParseOptions> {
+export abstract class Parser<TExtractorFunction extends Function, TParseOptions extends IParseOptions> {
 
     public static STRING_LITERAL_FILENAME: string = 'gettext-extractor-string-literal';
+
+    public abstract parser: string;
 
     public static createAddMessageCallback(messages: Partial<IMessage>[], fileName: string, getLineNumber: () => number | undefined): IAddMessageCallback {
         return (data: IMessageData) => {
@@ -56,13 +63,16 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
             if (typeof data.startChar !== 'number' || typeof data.endChar !== 'number') {
                 Object.assign(data, getFirstAndLastChar());
             }
+
             data.fileName = data.fileName || fileName;
 
             const functionData: IFunction = {
-                functionString: data.functionString,
+                functionString: data.functionString || '',
                 fileName: data.fileName,
                 startChar: <number>data.startChar,
-                endChar: <number>data.endChar
+                endChar: <number>data.endChar,
+                identifier: <string>data.identifier,
+                ...(data.declaration ? {declaration: data.declaration} : {})
             };
 
             functionsData.push(functionData);
@@ -78,7 +88,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
         this.validateExtractors(...extractors);
     }
 
-    public parseSvelteString(source: string, fileName?: string, options?: IParseOptions): this {
+    public parseSvelteString(source: string, fileName?: string, options?: TParseOptions): this {
         const { scriptInHTMLFragments, script } = svelteFragmentDivider(source, fileName);
         [
             ...(script ? [script] : []),
@@ -88,7 +98,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
                 this.parseString(
                     jsFragment.fragment,
                     fileName,
-                    <TParseOptions>{...options, ...{lineNumberStart: jsFragment.startLine + (options?.lineNumberStart || 0)}}
+                    <TParseOptions>{...options, ...{lineNumberStart: jsFragment.startLine + (options?.lineNumberStart || 0), startChar: jsFragment.startChar + (options?.startChar || 0)}}
                 );
             });
         return this;
@@ -128,8 +138,11 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
     public parseFile(fileName: string, options?: TParseOptions): this {
         Validate.required.nonEmptyString({fileName});
         this.validateParseOptions(options);
-
-        this.parseSvelteString(fs.readFileSync(fileName).toString(), fileName, options);
+        if (this.parser === 'SvelteParser') {
+            this.parseSvelteString(fs.readFileSync(fileName).toString(), fileName, options);
+        } else {
+            this.parseString(fs.readFileSync(fileName).toString(), fileName, options);
+        }
 
         return this;
     }
@@ -167,6 +180,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
             }
         }
     }
+
 
     protected abstract parse(source: string, fileName: string, options?: TParseOptions): IParsed;
 }

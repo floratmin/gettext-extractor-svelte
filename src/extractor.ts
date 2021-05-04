@@ -2,12 +2,16 @@ import * as fs from 'fs';
 import * as pofile from 'pofile';
 
 import { CatalogBuilder, IContext, IMessage } from 'gettext-extractor/dist/builder';
-import { JsParser, IJsExtractorFunction } from 'gettext-extractor/dist/js/parser';
 import { HtmlParser, IHtmlExtractorFunction } from 'gettext-extractor/dist/html/parser';
 import { StatsOutput } from 'gettext-extractor/dist/utils/output';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { SvelteParser } from './svelte/parser';
 import { FunctionBuilder, IFunctionDict, IFunction } from './builder';
+import { IJsExtractorFunction } from './js/parser';
+import { JsParser } from './js/parser';
+import { getIdentifierKey, ICustomJsExtractorOptions, IdentifierKey } from './js/extractors/factories/callExpression';
+import { Parser } from './parser';
+import { IMessageData } from 'gettext-extractor/dist/parser';
 
 export interface IGettextExtractorStats {
     numberOfMessages: number;
@@ -40,7 +44,7 @@ export class SvelteGettextExtractor {
     public createJsParser(extractors?: IJsExtractorFunction[]): JsParser {
         Validate.optional.nonEmptyArray({extractors});
 
-        return new JsParser(this.builder, extractors, this.stats);
+        return new JsParser(this.builder, this.functionBuilder, extractors, this.stats);
     }
 
     public createHtmlParser(extractors?: IHtmlExtractorFunction[]): HtmlParser {

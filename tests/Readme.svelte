@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { _ } from './translator-function';
+    import { t } from './translator-function';
     import Component from './Component.svelte';
     export let place: string;
-    let caption = _(
+    let caption = t(
         'FooCaption',
         'Context',
         {comment: 'Comment', path: 'https://www.example.com'}
@@ -11,14 +11,18 @@
 
 <body>
     <h1>{caption}</h1>
-    <p>{_('Foo')}</p>
-    {#each [_('Bar', 'Context', 'Comment'), _('Baz', 'Context', {comment: 'Comment'})] as text}
+    <p>{t('Foo')}</p>
+    {#each [t('Bar'), t('Baz')] as text}
         <p>{text}</p>
-        <Component label="{_('Bax', 'Context', {comment: 'Comment'})}">
-            {_(
+        <Component label="{t('Bax', 'Context', {comment: 'Comment'})}">
+            {t(
                 'Hello {PLACE}',
                 'Context',
-                {comment: 'Multiline\nComment', props: {PLACE: 'The place where you are'}},
+                {
+                    comment: 'Multiline\nComment',
+                    props: {PLACE: 'The place where you are'},
+                    messageformat: 'This could be a messageformat function'
+                },
                 {PLACE: place}
             )}
         </Component>

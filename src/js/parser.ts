@@ -1,11 +1,19 @@
 import * as ts from 'typescript';
-import { Parser } from '../parser';
-import { FunctionBuilder, IParsed } from '../builder';
-import { CatalogBuilder } from 'gettext-extractor/dist/builder';
-import { IGettextExtractorStats } from 'gettext-extractor/dist/extractor';
-import { IJsExtractorFunction, IJsParseOptions} from '../js/parser';
 
-export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> {
+import { CatalogBuilder } from 'gettext-extractor/dist/builder';
+import { IAddFunctionCallBack, Parser } from '../parser';
+import { FunctionBuilder, IParsed } from '../builder';
+import { IParseOptions } from '../parser';
+import { IGettextExtractorStats } from 'gettext-extractor/dist/extractor';
+import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
+
+export type IJsExtractorFunction = (node: ts.Node, sourceFile: ts.SourceFile, addMessage: IAddMessageCallback, addFunction?: IAddFunctionCallBack, startChar?: number, source?: string) => void;
+
+export interface IJsParseOptions extends IParseOptions {
+    scriptKind?: ts.ScriptKind;
+}
+
+export class JsParser extends Parser<IJsExtractorFunction, IParseOptions> {
 
     public parser: string;
 
@@ -17,7 +25,7 @@ export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> 
     ) {
         super(builder, functionBuilder, extractors, stats);
         this.validateExtractors(...extractors);
-        this.parser = 'SvelteParser';
+        this.parser = 'JsParser';
     }
 
     protected parse(source: string, fileName: string, options: IJsParseOptions = {}): IParsed {
@@ -30,7 +38,6 @@ export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> 
             messages: [],
             functionsData: []
         };
-
         let addMessageCallback = Parser.createAddMessageCallback(parsed.messages, sourceFile.fileName, () => {
             let location = sourceFile.getLineAndCharacterOfPosition(node.getStart());
             return lineNumberStart + location.line;
