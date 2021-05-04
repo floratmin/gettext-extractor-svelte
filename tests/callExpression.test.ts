@@ -3829,7 +3829,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         },
                         {
                             comments: ['Comment'],
-                            text: 'Foo7',
+                            text: 'Foo7'
                         },
                         {
                             comments: ['Comment'],
@@ -4102,7 +4102,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         {
                             text: 'Foo10',
                             textPlural: 'Plural',
-                            comments: ['Comment'],
+                            comments: ['Comment']
                         },
                         {
                             text: 'Foo11',
@@ -4111,7 +4111,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         },
                         {
                             text: 'Foo12',
-                            comments: ['Comment'],
+                            comments: ['Comment']
                         },
                         {
                             text: 'Foo13',
@@ -4223,7 +4223,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         {
                             text: 'Foo10',
                             comments: ['Comment'],
-                            textPlural: 'Plural',
+                            textPlural: 'Plural'
                         },
                         {
                             text: 'Foo11',
@@ -4232,7 +4232,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         },
                         {
                             text: 'Foo12',
-                            comments: ['Comment'],
+                            comments: ['Comment']
                         },
                         {
                             text: 'Foo13',
@@ -4454,7 +4454,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         {
                             textPlural: 'Plural',
                             text: 'Foo10',
-                            comments: ['Comment'],
+                            comments: ['Comment']
                         },
                         {
                             text: 'Foo11',
@@ -4463,7 +4463,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         },
                         {
                             text: 'Foo12',
-                            comments: ['Comment'],
+                            comments: ['Comment']
                         },
                         {
                             textPlural: 'Plural',
@@ -4578,7 +4578,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         {
                             comments: ['Comment'],
                             text: 'Foo10',
-                            textPlural: 'Plural',
+                            textPlural: 'Plural'
                         },
                         {
                             comments: ['Comment'],
@@ -4587,7 +4587,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         },
                         {
                             comments: ['Comment'],
-                            text: 'Foo12',
+                            text: 'Foo12'
                         },
                         {
                             comments: ['Comment'],
@@ -4612,7 +4612,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         },
                         {
                             comments: ['Comment'],
-                            text: 'Foo18',
+                            text: 'Foo18'
                         }
                     ]);
                 });
@@ -4703,7 +4703,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         {
                             textPlural: 'Plural',
                             comments: ['Comment'],
-                            text: 'Foo10',
+                            text: 'Foo10'
                         },
                         {
                             comments: ['Comment'],
@@ -4712,7 +4712,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         },
                         {
                             comments: ['Comment'],
-                            text: 'Foo12',
+                            text: 'Foo12'
                         },
                         {
                             textPlural: 'Plural',
@@ -4733,11 +4733,11 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         {
                             textPlural: 'Plural',
                             comments: ['Comment'],
-                            text: 'Foo17',
+                            text: 'Foo17'
                         },
                         {
                             comments: ['Comment'],
-                            text: 'Foo18',
+                            text: 'Foo18'
                         }
                     ]);
                 });
@@ -4831,7 +4831,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         {
                             comments: ['Comment'],
                             textPlural: 'Plural',
-                            text: 'Foo10',
+                            text: 'Foo10'
                         },
                         {
                             comments: ['Comment'],
@@ -4840,7 +4840,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         },
                         {
                             comments: ['Comment'],
-                            text: 'Foo12',
+                            text: 'Foo12'
                         },
                         {
                             comments: ['Comment'],
@@ -5151,7 +5151,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
                         {
                             comments: ['Comment'],
                             text: 'Foo12'
-                        },
+                        }
                     ]);
                 });
             });

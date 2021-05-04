@@ -13,6 +13,7 @@
     "watch": "tsc -w",
     "build": "tsc",
     "lint": "tslint src/**/*.ts",
+    "lint:test": "tslint tests/**/*.test.ts",
     "test": "jest --config jest.json"
   },
   "repository": {

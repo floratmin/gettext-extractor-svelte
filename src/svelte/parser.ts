@@ -3,7 +3,7 @@ import { Parser } from '../parser';
 import { FunctionBuilder, IParsed } from '../builder';
 import { CatalogBuilder } from 'gettext-extractor/dist/builder';
 import { IGettextExtractorStats } from 'gettext-extractor/dist/extractor';
-import { IJsExtractorFunction, IJsParseOptions} from '../js/parser';
+import { IJsExtractorFunction, IJsParseOptions } from '../js/parser';
 
 export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> {
 
