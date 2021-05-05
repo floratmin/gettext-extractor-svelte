@@ -146,6 +146,13 @@ describe('Extract translation functions to gettext and to function dict', () => 
                 }
             ]
         });
+        expect(extractor.getMessageDictionary()).toEqual({
+            '{"text":"Bar","context":"Context"}': 'Bar',
+            '{"text":"Bax","context":"Context"}': 'Bax',
+            '{"text":"Bay","context":"Context"}': 'Bay',
+            '{"text":"Baz","context":"Context"}': 'Baz',
+            '{"text":"Foo","context":"Context"}': 'Foo'
+        });
     });
     test('Comments are objects with fallback', () => {
         const options: ICustomJsExtractorOptions = {
@@ -505,6 +512,7 @@ describe('Extract translation functions to gettext and to function dict', () => 
                 textPlural: null,
                 context: null,
                 references: [
+                    'tests/App.svelte:9',
                     'tests/Readme.svelte:14'
                 ],
                 comments: []
@@ -566,6 +574,12 @@ describe('Extract translation functions to gettext and to function dict', () => 
                     identifier: 'Hello World',
                     startChar: 210,
                     endChar: 257
+                },
+                {
+                    functionString: 't(\'Foo\')',
+                    identifier: 'Foo',
+                    startChar: 270,
+                    endChar: 278
                 }
             ],
             'tests/Readme.svelte': [
@@ -619,6 +633,16 @@ describe('Extract translation functions to gettext and to function dict', () => 
                     endChar: 820
                 }
             ]
+        });
+        expect(extractor.getMessageDictionary()).toEqual({
+            'Welcome {NAME}': 'Welcome {NAME}',
+            'Hello World': 'Hello World',
+            Foo: 'Foo',
+            Bar: 'Bar',
+            Baz: 'Baz',
+            Bax: 'Bax',
+            FooCaption: 'FooCaption',
+            'Hello {PLACE}': 'Hello {PLACE}'
         });
     });
     test('Throw error on file Error.svelte', () => {
@@ -734,7 +758,7 @@ describe('Extract translation functions to gettext and to function dict', () => 
                 {
                     functionExtractor: findFunctionExpression,
                     identifier: 'functionIdentifier',
-                    restrictToFileName: 'src/file.ts'
+                    restrictToFile: 'src/file.ts'
                 }
         };
         const jsString = i`
@@ -886,7 +910,7 @@ let Foo2 = class Bar2 {
                     {
                         functionExtractor: findTranslationClassExpression,
                         identifier: 'translatorFunction',
-                        restrictToFileName: 'src/file.ts'
+                        restrictToFile: 'src/file.ts'
                     }
                 ]
         };
@@ -902,7 +926,6 @@ let Foo2 = class Bar2 {
             .addExtractor(callExpressionExtractor('_', options))
             .parseString(jsString, './src/file.ts');
 
-        console.log(extractor.getFunctions());
         expect(extractor.getFunctions()).toEqual({
             'src/file.ts': [
                 {
@@ -1210,7 +1233,7 @@ export class Foo {
                 [
                     {
                         functionExtractor: findFunctionExpression,
-                        restrictToFileName: 'src/nofile.ts'
+                        restrictToFile: 'src/nofile.ts'
                     }
                 ]
         };

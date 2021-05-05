@@ -1,10 +1,10 @@
 import * as ts from 'typescript';
 
-import { IAddMessageCallback, IMessageData } from 'gettext-extractor/dist/parser';
+import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { IContentOptions, normalizeContent, validateContentOptions } from 'gettext-extractor/dist/utils/content';
 import { JsUtils } from 'gettext-extractor/dist/js/utils';
-import { IAddFunctionCallBack, IFunctionData } from '../../../parser';
+import { IAddFunctionCallBack, IFunctionData, IMessageData } from '../../../parser';
 import { IJsExtractorFunction } from '../../parser';
 import { FunctionExtractor, TextNode } from '../functionExtractors';
 
@@ -23,7 +23,7 @@ interface IArgumentIndexMapping {
 }
 
 export type TTranslatorFunction = {
-    restrictToFileName?: string;
+    restrictToFile?: string;
     functionExtractor: FunctionExtractor;
     identifier?: string;
 };
@@ -119,7 +119,7 @@ export function callExpressionExtractor(calleeName: string | string[], options: 
         if (source && options.translatorFunction && addFunction) {
             const translatorFunctions = Array.isArray(options.translatorFunction) ? options.translatorFunction : [options.translatorFunction];
             translatorFunctions.forEach(translatorFunction => {
-                if (!translatorFunction.restrictToFileName || translatorFunction.restrictToFileName === sourceFile.fileName) {
+                if (!translatorFunction.restrictToFile || translatorFunction.restrictToFile === sourceFile.fileName) {
                     const functionExtractor = translatorFunction.functionExtractor;
                     const functionNodes = getFunctionFromNode(node, functionExtractor);
 
@@ -158,9 +158,11 @@ export function callExpressionExtractor(calleeName: string | string[], options: 
             if (matches) {
                 let message = extractArguments(callExpression, options.arguments, contentOptions, commentOptions);
                 if (message) {
+                    const identifierKey = getIdentifierKey(message, sourceFile.fileName, options.identifierKeys);
+                    message.identifier = identifierKey;
                     addMessage(message);
                     if (addFunction && source) {
-                        addFunction(getData(callExpression, source, startChar, getIdentifierKey(message, sourceFile.fileName, options.identifierKeys)));
+                        addFunction(getData(callExpression, source, startChar, identifierKey));
                     }
                 }
             }

@@ -39,7 +39,7 @@ const options: ICustomJsExtractorOptions = {
     translatorFunction: {
         functionExtractor: findTranslationClassExpression,
         identifier: 'translatorFunction',
-        restrictToFileName: './src/translator.ts'
+        restrictToFile: './src/translator.ts'
     }
 }
 
@@ -49,6 +49,7 @@ extractor.createSvelteParser()
 
 const messages = extractor.getMessages();
 const functionDict = extractor.getFunctions();
+const messageDict = extractor.getMessageDict();
 ```
 From the following svelte file named `src/App.svelte`:
 ```sveltehtml
@@ -169,22 +170,22 @@ and the following functions:
             endChar: 332
         },
         {
-            functionString: "_('Bar', 'Context', 'Comment')",
+            functionString: "_('Bar')",
             identifier: '{"text":"Bar"}',
             startChar: 350,
             endChar: 358
         },
         {
-            functionString: "_('Baz', 'Context', {comment: 'Comment'})",
+            functionString: "_('Baz')",
             identifier: '{"text":"Baz"}',
             startChar: 360,
             endChar: 368
         },
         {
-            functionString: "_('Bax', 'Context', {comment: 'Comment'})",
+            functionString: "_('Bax')",
             identifier: '{"text":"Bax"}',
             startChar: 428,
-            endChar: 469
+            endChar: 436
         },
         {
             functionString: `_(
@@ -197,7 +198,7 @@ and the following functions:
                 },
                 {PLACE: place}
             )`,
-            identifier: '{"text":"Bax","context":"Context"}',
+            identifier: '{"text":"Hello {PLACE}","context":"Context"}',
             startChar: 486,
             endChar: 820
         } 
@@ -216,7 +217,18 @@ and the following functions:
     ]
 }
 ```
+And the following simplified messages as a dictionary
+```js
+{
+    '{"text":"Foo"}': 'Foo',
+    '{"text":"Bar"}': 'Bar',
+    '{"text":"Baz"}': 'Baz',
+    '{"text":"Bax"}': 'Bax',
+    '{"text":"FooCaption","context":"Context"}': 'FooCaption',
+    '{"text":"Hello {PLACE}","context":"Context"}': 'Hello {PLACE}'
+}
 
+```
 ### Additional methods for SvelteGettextExtractor
 
 ### <a id="get-functions"></a>&nbsp;&nbsp;`getFunctions()`
@@ -224,9 +236,6 @@ Gets all parsed function calls
 
 ##### Return Value
 *object* · Dictionary with keys of file name and values of a list of function objects with properties as described below
-
-
-For all available options please look at package [gettext-extractor](https://github.com/lukasgeiter/gettext-extractor)
 
 | **Name**         | **Type** | **Details**                                    |
 |------------------|----------|------------------------------------------------|
@@ -267,13 +276,27 @@ Save functions dictionary as a JSON file asynchronously.
 #### Return Value
 *Promise*
 
+### &nbsp;&nbsp;`getMessageDictionary()`
+Recieve a dictionary mapping message text to function dictionary.
+
+##### Return Value
+*object* · Dictionary with identifier strings as keys and message text as value
+
+### &nbsp;&nbsp;`getTransformedMessages<T = any>(func: (messages: IMessage[]) => T)`
+Transform message object with custom function.
+
+##### Return Value
+*T* · Depends on your function
+
+For all other available options please look at the package [gettext-extractor](https://github.com/lukasgeiter/gettext-extractor)
+
 # JS Parser for [gettext-extractor](https://github.com/lukasgeiter/gettext-extractor)
 
 Extract comments provided by a string or an object in the translator function.
 
 ```ts
 import { callExpressionExtractor, ICustomJsExtractorOptions } 
-    from '@floratmin/gettext-extractor-js-parser';
+    from 'gettext-extractor-svelte';
 import { GettextExtractor } from 'gettext-extractor';
 
 const options: ICustomJsExtractorOptions = {
@@ -345,7 +368,7 @@ to the comments with a semicolon followed by the value of the key.
 |-----------------------|-------------------------|-----------|-----------------------------------------------------------------------------------|
 | `functionExtractor`   | *FunctionExtractor*     |           | The function extractor describing the typescript nodes of the function to extract |
 | `identifier`          | *string*                |           | The identifier under which the function will be added to the dict                 |
-| `restrictToFileName`  | *string*                |           | When set than only the specified file will be parsed for the function             |
+| `restrictToFile`      | *string*                |           | When set than only the specified file will be parsed for the function             |
 
 ##### Return Value
 *function* · An extractor function that extracts messages from call expressions.

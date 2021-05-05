@@ -6,6 +6,7 @@
 
 <main>
 	<h1>{t('Hello World', 'app', 'Computer is greeting')}!</h1>
+	<p>{t('Foo')}</p>
 	<p>{greeting}</p>
 </main>
 

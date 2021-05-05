@@ -1,10 +1,9 @@
 import * as ts from 'typescript';
 
-import { CatalogBuilder } from 'gettext-extractor/dist/builder';
 import { IAddFunctionCallBack, Parser } from '../parser';
-import { FunctionBuilder, IParsed } from '../builder';
+import { FunctionBuilder, IParsed, CatalogBuilder } from '../builder';
 import { IParseOptions } from '../parser';
-import { IGettextExtractorStats } from 'gettext-extractor/dist/extractor';
+import { IGettextExtractorStats } from '../extractor';
 import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
 
 export type IJsExtractorFunction = (node: ts.Node, sourceFile: ts.SourceFile, addMessage: IAddMessageCallback, addFunction?: IAddFunctionCallBack, startChar?: number, source?: string) => void;

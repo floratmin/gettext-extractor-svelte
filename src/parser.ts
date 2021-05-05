@@ -1,12 +1,11 @@
 import * as fs from 'fs';
 import * as glob from 'glob';
 
-import { IGettextExtractorStats } from 'gettext-extractor/dist/extractor';
-import { IMessageData, IAddMessageCallback } from 'gettext-extractor/dist/parser';
-import { CatalogBuilder, IMessage } from 'gettext-extractor/dist/builder';
+import { IGettextExtractorStats } from './extractor';
+import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { svelteFragmentDivider } from '@floratmin/svelte-fragment-divider';
-import { FunctionBuilder, IFunction, IParsed } from './builder';
+import { FunctionBuilder, IMessage, IFunction, IParsed, CatalogBuilder} from './builder';
 
 export interface IFunctionData {
     functionString?: string;
@@ -14,6 +13,15 @@ export interface IFunctionData {
     startChar?: number;
     endChar?: number;
     definition?: true;
+    identifier?: string;
+}
+export interface IMessageData {
+    text: string;
+    textPlural?: string;
+    context?: string;
+    lineNumber?: number;
+    fileName?: string;
+    comments?: string[];
     identifier?: string;
 }
 
@@ -51,7 +59,8 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
                 textPlural: data.textPlural || undefined,
                 context: data.context || undefined,
                 references: references,
-                comments: data.comments && data.comments.length ? data.comments : undefined
+                comments: data.comments && data.comments.length ? data.comments : undefined,
+                identifier: data.identifier
             };
 
             messages.push(message);

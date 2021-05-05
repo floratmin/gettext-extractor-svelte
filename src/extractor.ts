@@ -1,17 +1,13 @@
 import * as fs from 'fs';
 import * as pofile from 'pofile';
 
-import { CatalogBuilder, IContext, IMessage } from 'gettext-extractor/dist/builder';
-import { HtmlParser, IHtmlExtractorFunction } from 'gettext-extractor/dist/html/parser';
+import { HtmlParser, IHtmlExtractorFunction } from './html/parser';
 import { StatsOutput } from 'gettext-extractor/dist/utils/output';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { SvelteParser } from './svelte/parser';
-import { FunctionBuilder, IFunctionDict, IFunction } from './builder';
+import { FunctionBuilder, IFunctionDict, IFunction, CatalogBuilder, IMessage, IContext } from './builder';
 import { IJsExtractorFunction } from './js/parser';
 import { JsParser } from './js/parser';
-import { getIdentifierKey, ICustomJsExtractorOptions, IdentifierKey } from './js/extractors/factories/callExpression';
-import { Parser } from './parser';
-import { IMessageData } from 'gettext-extractor/dist/parser';
 
 export interface IGettextExtractorStats {
     numberOfMessages: number;
@@ -49,8 +45,7 @@ export class SvelteGettextExtractor {
 
     public createHtmlParser(extractors?: IHtmlExtractorFunction[]): HtmlParser {
         Validate.optional.nonEmptyArray({extractors});
-
-        return new HtmlParser(this.builder, extractors, this.stats);
+        return new HtmlParser(this.builder, this.functionBuilder, extractors, this.stats);
     }
 
     public createSvelteParser(extractors?: IJsExtractorFunction[]): SvelteParser {
@@ -64,6 +59,7 @@ export class SvelteGettextExtractor {
         Validate.optional.stringProperty(message, 'message.context');
         Validate.optional.arrayProperty(message, 'message.references');
         Validate.optional.arrayProperty(message, 'message.comments');
+        Validate.required.stringProperty(message, 'message.identifier');
 
         this.builder.addMessage(message);
     }
@@ -78,6 +74,14 @@ export class SvelteGettextExtractor {
 
     public getMessagesByContext(context: string): IMessage[] {
         return this.builder.getMessagesByContext(context);
+    }
+
+    public getMessageDictionary(): Record<string, string> {
+        return this.builder.getMessageDictionary();
+    }
+
+    public getTransformedMessages<T = any>(func: (messages: IMessage[]) => T): T {
+        return this.builder.getTransformedMessages(func);
     }
 
     public addFunctions(functionData: IFunction): void {

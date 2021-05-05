@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { Parser } from '../parser';
 import { FunctionBuilder, IParsed } from '../builder';
-import { CatalogBuilder } from 'gettext-extractor/dist/builder';
+import { CatalogBuilder } from '../builder';
 import { IGettextExtractorStats } from 'gettext-extractor/dist/extractor';
 import { IJsExtractorFunction, IJsParseOptions } from '../js/parser';
 
