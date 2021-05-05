@@ -1,5 +1,5 @@
 # [gettext-extractor](https://github.com/lukasgeiter/gettext-extractor) for svelte files
-This extractor extracts also all the called functions into a separate dictionary.
+This extractor extracts also all the called functions and the function definition into a separate dictionary.
 
 ### Installation
 
@@ -217,7 +217,7 @@ the following functions:
     ]
 }
 ```
-and the simplified messages as a dictionary
+and the mapping of identifiers to text as an object
 ```js
 {
     '{"text":"Foo"}': 'Foo',
@@ -230,6 +230,12 @@ and the simplified messages as a dictionary
 
 ```
 ### Additional methods for SvelteGettextExtractor
+
+### &nbsp;&nbsp;`createSvelteParser()`
+Create parser for parsing `.svelte` files
+
+##### Return Value
+*SvelteParser* · Can be used in the same way as parser created with `createJsParser()`
 
 ### <a id="get-functions"></a>&nbsp;&nbsp;`getFunctions()`
 Gets all parsed function calls
