@@ -149,7 +149,7 @@ we extract the following messages:
     },
 ]
 ```
-and the following functions:
+the following functions:
 ```js
 {
     'src/App.svelte': [
@@ -217,7 +217,7 @@ and the following functions:
     ]
 }
 ```
-And the following simplified messages as a dictionary
+and the simplified messages as a dictionary
 ```js
 {
     '{"text":"Foo"}': 'Foo',
@@ -277,7 +277,7 @@ Save functions dictionary as a JSON file asynchronously.
 *Promise*
 
 ### &nbsp;&nbsp;`getMessageDictionary()`
-Recieve a dictionary mapping message text to function dictionary.
+Recieve a dictionary mapping message text to function identifiers.
 
 ##### Return Value
 *object* · Dictionary with identifier strings as keys and message text as value
@@ -302,7 +302,7 @@ Extract comments provided by a string or an object in the translator function.
 ```ts
 import { callExpressionExtractor, ICustomJsExtractorOptions } 
     from 'gettext-extractor-svelte';
-import { GettextExtractor } from 'gettext-extractor';
+import { GettextExtractor } from 'gettext-extractor'; // Works also with SvelteGettextExtractor
 
 const options: ICustomJsExtractorOptions = {
     arguments: {
@@ -594,7 +594,7 @@ Marks variable declarations.
 | **Name**       | **Type**               | **Default** | **Details**                                                                |
 |----------------|------------------------|-------------|----------------------------------------------------------------------------|
 | `variableName` | *string*               |             | **Required** · Name of declared variable                                   |
-| `properties`   | *FunctionExtractor*    |             | Function extractor defining the initializer                                |
+| `initializer`  | *FunctionExtractor*    |             | Function extractor defining the initializer                                |
 | `getPos`       | *true*                 | `false`     | Return start and end position in call expression to extract node as string |
 
 ##### Return Value
@@ -607,7 +607,7 @@ Marks property assignment.
 | **Name**       | **Type**               | **Default** | **Details**                                                                |
 |----------------|------------------------|-------------|----------------------------------------------------------------------------|
 | `keyName`      | *string*               |             | **Required** · Name of property                                            |
-| `properties`   | *FunctionExtractor*    |             | Function extractor defining the initializer                                |
+| `initializer`  | *FunctionExtractor*    |             | Function extractor defining the initializer                                |
 | `getPos`       | *true*                 | `false`     | Return start and end position in call expression to extract node as string |
 
 ##### Return Value
@@ -632,18 +632,6 @@ Marks arrow function.
 | **Name**     | **Type**               | **Default** | **Details**                                                                |
 |--------------|------------------------|-------------|----------------------------------------------------------------------------|
 | `getPos`     | *boolean*              | `false`     | Return start and end position in call expression to extract node as string |
-
-##### Return Value
-*FunctionExtractor* 
-
-### &nbsp;&nbsp;`functionExpression(functionName?, getPos?)`
-Marks function expression.
-
-#### Parameters
-| **Name**       | **Type**               | **Default** | **Details**                                                                |
-|----------------|------------------------|-------------|----------------------------------------------------------------------------|
-| `functionName` | *string*               |             | Name of function expression                                                |
-| `getPos`       | *boolean*              | `false`     | Return start and end position in call expression to extract node as string |
 
 ##### Return Value
 *FunctionExtractor* 
@@ -673,6 +661,18 @@ Marks function declaration.
 ##### Return Value
 *FunctionExtractor* 
 
+### &nbsp;&nbsp;`functionExpression(functionName?, getPos?)`
+Marks function expression.
+
+#### Parameters
+| **Name**       | **Type**               | **Default** | **Details**                                                                |
+|----------------|------------------------|-------------|----------------------------------------------------------------------------|
+| `functionName` | *string*               |             | Name of function expression                                                |
+| `getPos`       | *boolean*              | `false`     | Return start and end position in call expression to extract node as string |
+
+##### Return Value
+*FunctionExtractor* 
+
 ### &nbsp;&nbsp;`classDeclaration(className, members?, getPos?)`
 Marks class declarations.
 
@@ -680,7 +680,7 @@ Marks class declarations.
 | **Name**       | **Type**               | **Default** | **Details**                                                                |
 |----------------|------------------------|-------------|----------------------------------------------------------------------------|
 | `className`    | *string*               |             | **Required** · Name of class                                               |
-| `properties`   | *FunctionExtractor[]*  |             | Array of function extractors defining the members of the class             |
+| `members`      | *FunctionExtractor[]*  |             | Array of function extractors defining the members of the class             |
 | `getPos`       | *true*                 | `false`     | Return start and end position in call expression to extract node as string |
 
 ##### Return Value
@@ -693,7 +693,7 @@ Marks class expression.
 | **Name**       | **Type**               | **Default** | **Details**                                                                |
 |----------------|------------------------|-------------|----------------------------------------------------------------------------|
 | `className`    | *string*               |             | Name of class                                                              |
-| `properties`   | *FunctionExtractor[]*  |             | Array of function extractors defining the members of the class             |
+| `members`      | *FunctionExtractor[]*  |             | Array of function extractors defining the members of the class             |
 | `getPos`       | *true*                 | `false`     | Return start and end position in call expression to extract node as string |
 
 ##### Return Value
