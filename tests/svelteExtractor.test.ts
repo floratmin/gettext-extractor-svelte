@@ -807,7 +807,7 @@ describe('Extract translation functions to gettext and to function dict', () => 
             functionExtractor.propertyDeclaration('baz', functionExtractor.functionExpression( undefined, true)),
             functionExtractor.propertyDeclaration('bax', functionExtractor.arrowFunction(true))
         ]);
-        const findTranslationClassExpression = functionExtractor.variableDeclaration('Foo2', functionExtractor.classExpression([
+        const findTranslationClassExpression = functionExtractor.variableDeclaration('Foo2', functionExtractor.classExpression( undefined, [
             functionExtractor.methodDeclaration('bar2', true)
         ]));
         const options: ICustomJsExtractorOptions = {
@@ -896,7 +896,7 @@ let Foo2 = class Bar2 {
     });
     test('Extracts class expression, readme example', () => {
         const functionExtractor = new FunctionExtractorBuilder();
-        const findTranslationClassExpression = functionExtractor.variableDeclaration('foo', functionExtractor.classExpression([
+        const findTranslationClassExpression = functionExtractor.variableDeclaration('foo', functionExtractor.classExpression('Bar', [
             functionExtractor.methodDeclaration('bar', true)
         ]));
         const options: ICustomJsExtractorOptions = {

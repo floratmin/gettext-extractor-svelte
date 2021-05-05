@@ -100,9 +100,10 @@ export class FunctionExtractorBuilder {
         };
     }
 
-    public classExpression(members?: FunctionExtractor[], getPos: boolean = false): FunctionExtractor {
+    public classExpression(className?: string, members?: FunctionExtractor[], getPos: boolean = false): FunctionExtractor {
         return {
             kind: ts.SyntaxKind.ClassExpression,
+            ...(className ? this.getName(className) : {}),
             ...(members ? {members} : {}),
             ...(getPos ? {getPos} : {})
         };
