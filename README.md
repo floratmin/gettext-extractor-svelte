@@ -18,7 +18,7 @@ import {
 const extractor = new SvelteGettextExtractor();
 const functionExtractor = new FunctionExtractorBuilder();
 const findTranslationClassExpression = functionExtractor.variableDeclaration(
-    'Foo', functionExtractor.classExpression([
+    'Foo', functionExtractor.classExpression(undefined, [
         functionExtractor.methodDeclaration('bar', true)
     ])
 );
@@ -679,9 +679,73 @@ Marks class declarations.
 #### Parameters
 | **Name**       | **Type**               | **Default** | **Details**                                                                |
 |----------------|------------------------|-------------|----------------------------------------------------------------------------|
-| `variableName` | *string*               |             | **Required** · Name of declared variable                                   |
-| `properties`   | *FunctionExtractor*    |             | Function extractor defining the initializer                                |
+| `className`    | *string*               |             | **Required** · Name of class                                               |
+| `properties`   | *FunctionExtractor[]*  |             | Array of function extractors defining the members of the class             |
 | `getPos`       | *true*                 | `false`     | Return start and end position in call expression to extract node as string |
+
+##### Return Value
+*FunctionExtractor* 
+
+### &nbsp;&nbsp;`classExpression(className?, members?, getPos?)`
+Marks class expression.
+
+#### Parameters
+| **Name**       | **Type**               | **Default** | **Details**                                                                |
+|----------------|------------------------|-------------|----------------------------------------------------------------------------|
+| `className`    | *string*               |             | Name of class                                                              |
+| `properties`   | *FunctionExtractor[]*  |             | Array of function extractors defining the members of the class             |
+| `getPos`       | *true*                 | `false`     | Return start and end position in call expression to extract node as string |
+
+##### Return Value
+*FunctionExtractor* 
+
+### &nbsp;&nbsp;`getAccessor(accessorName, body?, getPos?)`
+Marks get accessor.
+
+#### Parameters
+| **Name**       | **Type**               | **Default** | **Details**                                                                |
+|----------------|------------------------|-------------|----------------------------------------------------------------------------|
+| `accessorName` | *string*               |             | **Required** · Name of accessor                                            |
+| `body`         | *FunctionExtractor*    |             | Function extractor defining the body of the get accessor                   |
+| `getPos`       | *true*                 | `false`     | Return start and end position in call expression to extract node as string |
+
+##### Return Value
+*FunctionExtractor* 
+
+### &nbsp;&nbsp;`setAccessor(accessorName, body?, getPos?)`
+Marks set accessor.
+
+#### Parameters
+| **Name**       | **Type**               | **Default** | **Details**                                                                |
+|----------------|------------------------|-------------|----------------------------------------------------------------------------|
+| `accessorName` | *string*               |             | **Required** · Name of accessor                                            |
+| `body`         | *FunctionExtractor*    |             | Function extractor defining the body of the set accessor                   |
+| `getPos`       | *true*                 | `false`     | Return start and end position in call expression to extract node as string |
+
+##### Return Value
+*FunctionExtractor* 
+
+### &nbsp;&nbsp;`expressionStatement(identifier, right?, getPos?)`
+Marks expression statement.
+
+#### Parameters
+| **Name**       | **Type**               | **Default** | **Details**                                                                |
+|----------------|------------------------|-------------|----------------------------------------------------------------------------|
+| `identifier`   | *string*               |             | **Required** · Name of identifier on the left side of expression statement |
+| `right`        | *FunctionExtractor*    |             | Function extractor defining the right side of the expression statement     |
+| `getPos`       | *true*                 | `false`     | Return start and end position in call expression to extract node as string |
+
+##### Return Value
+*FunctionExtractor* 
+
+### &nbsp;&nbsp;`labeledStatement(statement?, getPos?)`
+Marks labeled statement.
+
+#### Parameters
+| **Name**     | **Type**               | **Default** | **Details**                                                                |
+|--------------|------------------------|-------------|----------------------------------------------------------------------------|
+| `statement`  | *FunctionExtractor*    |             | Function extractor for defining the right side of the labeled statement    |
+| `getPos`     | *boolean*              | `false`     | Return start and end position in call expression to extract node as string |
 
 ##### Return Value
 *FunctionExtractor* 
