@@ -2,6 +2,7 @@ import { IGettextExtractorStats } from './extractor';
 
 export interface IFunction {
     functionString: string;
+    functionStringReplace?: string;
     fileName: string;
     startChar: number;
     endChar: number;
@@ -30,7 +31,7 @@ export interface IContext {
 
 export type IMessageMap = {[text: string]: IMessage};
 export type IContextMap = {[context: string]: IMessageMap};
-export type IFunctionDictData = Pick<IFunction, 'functionString' | 'startChar' | 'endChar' | 'identifier' | 'definition'>;
+export type IFunctionDictData = Pick<IFunction, 'functionString' | 'functionStringReplace' | 'startChar' | 'endChar' | 'identifier' | 'definition'>;
 export type IFunctionDict = Record<string, IFunctionDictData[]>;
 
 export class FunctionBuilder {
@@ -41,6 +42,7 @@ export class FunctionBuilder {
     public addFunction(functionData: IFunction, fileName?: string): void {
         const functionDictData: IFunctionDictData = {
             functionString: functionData.functionString,
+            functionStringReplace: functionData.functionStringReplace,
             startChar: functionData.startChar,
             endChar: functionData.endChar,
             identifier: functionData.identifier,

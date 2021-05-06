@@ -5,10 +5,16 @@ import { IGettextExtractorStats } from './extractor';
 import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { svelteFragmentDivider } from '@floratmin/svelte-fragment-divider';
-import { FunctionBuilder, IMessage, IFunction, IParsed, CatalogBuilder} from './builder';
+import { FunctionBuilder, IMessage, IFunction, IParsed, CatalogBuilder } from './builder';
+
+export type Pos = {
+    pos: number;
+    end: number;
+};
 
 export interface IFunctionData {
     functionString?: string;
+    functionStringReplace?: string;
     fileName?: string;
     startChar?: number;
     endChar?: number;
@@ -23,6 +29,7 @@ export interface IMessageData {
     fileName?: string;
     comments?: string[];
     identifier?: string;
+    pos?: Pos[];
 }
 
 export type IAddFunctionCallBack = (data: IFunctionData) => void;
@@ -77,6 +84,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
 
             const functionData: IFunction = {
                 functionString: data.functionString || '',
+                ...(data.functionStringReplace ? {functionStringReplace: data.functionStringReplace } : {}),
                 fileName: data.fileName,
                 startChar: <number>data.startChar,
                 endChar: <number>data.endChar,

@@ -243,13 +243,14 @@ Gets all parsed function calls
 ##### Return Value
 *object* · Dictionary with keys of file name and values of a list of function objects with properties as described below
 
-| **Name**         | **Type** | **Details**                                                           |
-|------------------|----------|-----------------------------------------------------------------------|
-| `functionString` | *string* | String of the function call in the source code                        |
-| `identifier`     | *string* | Identifier string constructed trough options.identifierKeys           |
-| `definition`     | *true*   | When set marks that string is part of translation function definition |
-| `startChar`      | *number* | Index where the function call string starts                           |
-| `endChar`        | *number* | Index where the function call string ends                             |
+| **Name**                | **Type** | **Details**                                                                             |
+|-------------------------|----------|-----------------------------------------------------------------------------------------|
+| `functionString`        | *string* | String of the function call in the source code                                          |
+| `functionStringReplace` | *string* | String of the function call stripped by text, textPlural, context and comment arguments |
+| `identifier`            | *string* | Identifier string constructed trough options.identifierKeys                             |
+| `definition`            | *true*   | When set marks that string is part of translation function definition                   |
+| `startChar`             | *number* | Index where the function call string starts                                             |
+| `endChar`               | *number* | Index where the function call string ends                                               |
 
 ### &nbsp;&nbsp;`getLastAddedFunctions()`
 Receive array of functions, which got added in the last call of `parseJsString`, `parseSvelteString`.

@@ -4,7 +4,7 @@ import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { IContentOptions, normalizeContent, validateContentOptions } from 'gettext-extractor/dist/utils/content';
 import { JsUtils } from 'gettext-extractor/dist/js/utils';
-import { IAddFunctionCallBack, IFunctionData, IMessageData } from '../../../parser';
+import { IAddFunctionCallBack, IFunctionData, IMessageData, Pos } from '../../../parser';
 import { IJsExtractorFunction } from '../../parser';
 import { FunctionExtractor, TextNode } from '../functionExtractors';
 
@@ -160,10 +160,11 @@ export function callExpressionExtractor(calleeName: string | string[], options: 
                 if (message) {
                     const identifierKey = getIdentifierKey(message, sourceFile.fileName, options.identifierKeys);
                     message.identifier = identifierKey;
-                    addMessage(message);
                     if (addFunction && source) {
-                        addFunction(getData(callExpression, source, startChar, identifierKey));
+                        addFunction(getData(callExpression, source, startChar, identifierKey, <Pos []>message.pos));
                     }
+                    delete message.pos;
+                    addMessage(message);
                 }
             }
         }
@@ -262,13 +263,25 @@ function getDiff(functionString: string): number {
     return functionString.length - shortenedFunctionString.length;
 }
 
-function getData(node: ts.Node, source: string, startChar: number, messageIdentifier: string): IFunctionData {
-    const functionString = source.slice(node.pos, node.end);
+function getData(node: ts.Node, source: string, startChar: number, messageIdentifier: string, messagePos: Pos[]): IFunctionData {
+    let functionString = source.slice(node.pos, node.end);
     const diff = getDiff(functionString);
+    let length = 0;
+    messagePos.sort((a, b) => b.pos - a.pos).forEach(({pos, end}) => {
+        let functionEnd = functionString.slice(end - node.end + length);
+        length = length + end - pos;
+        const propertyDelimiter = functionEnd.match(/^\s*,\s*/);
+        if (propertyDelimiter) {
+            length += propertyDelimiter[0].length;
+            functionEnd = functionEnd.slice(propertyDelimiter[0].length);
+        }
+        functionString = functionString.slice(0, pos - node.pos) + functionEnd;
+    });
     return {
         startChar: startChar + node.pos + diff,
         endChar: startChar + node.end,
         functionString: source.slice(node.pos + diff, node.end),
+        functionStringReplace: functionString.slice(diff).replace(/\s*,?\s*\)$/, ')'),
         identifier: messageIdentifier
     };
 }
@@ -383,20 +396,25 @@ function extractArguments(
 
     if (argumentExpressions.text) {
         let message: IMessageData = {
-            text: normalizeContent(argumentExpressions.text.text, contentOptions)
+            text: normalizeContent(argumentExpressions.text.text, contentOptions),
+            pos: [{pos: argumentExpressions.text.pos, end: argumentExpressions.text.end}]
         };
         if (argumentExpressions.textPlural) {
             message.textPlural = normalizeContent(argumentExpressions.textPlural.text, contentOptions);
+            message.pos?.push({pos: argumentExpressions.textPlural.pos, end: argumentExpressions.textPlural.end});
         }
         if (argumentExpressions.context) {
             message.context = normalizeContent(argumentExpressions.context.text, contentOptions);
+            message.pos?.push({pos: argumentExpressions.context.pos, end: argumentExpressions.context.end});
         }
         if (commentsExpression && commentOptions && isObjectLiteralExpression(commentsExpression)) {
             const commentsObject = <CommentsObject>{comment: [], propComments: [], keyedComments: [], otherComments: []};
             getComments(commentsExpression, undefined, commentOptions, commentsObject, message);
             message.comments = [...commentsObject.comment, ...commentsObject.otherComments, ...commentsObject.propComments, ...commentsObject.keyedComments];
+            message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
         } else if (commentsExpression && isTextLiteral(commentsExpression)) {
             message.comments = [...normalizeContent(commentsExpression.text, contentOptions).split('\n')];
+            message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
         }
         return message;
     }

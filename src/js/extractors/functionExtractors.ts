@@ -8,7 +8,7 @@ export type TextNode = {
 export type ModuleSpecifierNode = {
     kind: ts.SyntaxKind.StringLiteral,
     text: string;
-}
+};
 
 export type FunctionExtractor = {
     kind: ts.SyntaxKind;

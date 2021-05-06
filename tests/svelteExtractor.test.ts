@@ -2,6 +2,7 @@ import { SvelteGettextExtractor, callExpressionExtractor, ICustomJsExtractorOpti
 import { IMessage } from 'gettext-extractor/dist/builder';
 import { HtmlExtractors } from 'gettext-extractor';
 import { IMessageData } from '../dist/parser';
+import { get } from 'svelte/store';
 
 function i(strings: TemplateStringsArray): string {
     const stringArray = strings[0].split('\n');
@@ -117,30 +118,35 @@ describe('Extract translation functions to gettext and to function dict', () => 
             'src/App.svelte': [
                 {
                     functionString: '_(\'Foo\', \'Context\', \'Comment\')',
+                    functionStringReplace: '_()',
                     identifier: '{"text":"Foo","context":"Context"}',
                     startChar: 89,
                     endChar: 119
                 },
                 {
                     functionString: '_(\'Bar\', \'Context\', \'Comment\')',
+                    functionStringReplace: '_()',
                     identifier: '{"text":"Bar","context":"Context"}',
                     startChar: 150,
                     endChar: 180
                 },
                 {
                     functionString: '_(\'Baz\', \'Context\', \'Comment\')',
+                    functionStringReplace: '_()',
                     identifier: '{"text":"Baz","context":"Context"}',
                     startChar: 196,
                     endChar: 226
                 },
                 {
                     functionString: '_(\'Bax\', \'Context\', \'Comment\')',
+                    functionStringReplace: '_()',
                     identifier: '{"text":"Bax","context":"Context"}',
                     startChar: 266,
                     endChar: 296
                 },
                 {
                     functionString: '_(\'Bay\', \'Context\', \'Comment\')',
+                    functionStringReplace: '_()',
                     identifier: '{"text":"Bay","context":"Context"}',
                     startChar: 311,
                     endChar: 341
@@ -245,6 +251,97 @@ describe('Extract translation functions to gettext and to function dict', () => 
                 textPlural: null
             }
         ]));
+    });
+    test('Replaced function with object in between and fallback', () => {
+        const options: ICustomJsExtractorOptions = {
+            arguments: {
+                text: 0,
+                context: 2,
+                comments: 4
+            },
+            comments: {
+                commentString: 'comment',
+                props: {
+                    props: ['{', '}']
+                },
+                fallback: true
+            }
+        };
+        const svelteFile = i`
+            <script>
+                import Component from './Component.svelte';
+                const translate = _('Foo', undefined, 'Context', {foo: bar}, {comment: 'Comment'});
+            </script>
+
+            <p>
+                {
+                    _('Bar', {bar: baz}, 'Context', undefined, {comment: 'Comment', props: {BAR: 'Bar comment'}})
+                 +
+                    _('Baz', {baz: bax}, {comment: 'Comment'})
+                }
+            </p>
+            `;
+
+        const extractor = getExtractor(svelteFile, options);
+        expect(
+            getMessagesFromExtractor(extractor)
+        ).toEqual(sortMessages([
+            {
+                text: 'Foo',
+                context: 'Context',
+                comments: ['Comment'],
+                references: [
+                   'src/App.svelte:3'
+                ],
+                textPlural: null
+            },
+            {
+                text: 'Bar',
+                context: 'Context',
+                comments: [
+                    'Comment',
+                    '{BAR}: Bar comment'
+                ],
+                references: [
+                    'src/App.svelte:8'
+                ],
+                textPlural: null
+            },
+            {
+                text: 'Baz',
+                comments: ['Comment'],
+                context: null,
+                references: [
+                    'src/App.svelte:10'
+                ],
+                textPlural: null
+            }
+        ]));
+        expect(extractor.getFunctions()).toEqual({
+            'src/App.svelte': [
+                {
+                    functionString: '_(\'Foo\', undefined, \'Context\', {foo: bar}, {comment: \'Comment\'})',
+                    functionStringReplace: '_(undefined,{foo: bar})',
+                    identifier: '{"text":"Foo","context":"Context"}',
+                    startChar: 79,
+                    endChar: 143
+                },
+                {
+                    functionString: '_(\'Bar\', {bar: baz}, \'Context\', undefined, {comment: \'Comment\', props: {BAR: \'Bar comment\'}})',
+                    functionStringReplace: '_({bar: baz},undefined)',
+                    identifier: '{"text":"Bar","context":"Context"}',
+                    startChar: 174,
+                    endChar: 267
+                },
+                {
+                    functionString: '_(\'Baz\', {baz: bax}, {comment: \'Comment\'})',
+                    functionStringReplace: '_({baz: bax})',
+                    identifier: '{"text":"Baz"}',
+                    startChar: 283,
+                    endChar: 325
+                }
+            ]
+        });
     });
     test('Comments are objects/strings without fallback', () => {
         const options: ICustomJsExtractorOptions = {
@@ -566,18 +663,21 @@ describe('Extract translation functions to gettext and to function dict', () => 
             'tests/App.svelte': [
                 {
                     functionString: 't(\'Welcome {NAME}\', \'app\', {comment: \'Welcoming the user\', props: {NAME: \'Name of user\'}}, {NAME: name})',
+                    functionStringReplace: 't({NAME: name})',
                     identifier: 'Welcome {NAME}',
                     startChar: 80,
                     endChar: 184
                 },
                 {
                     functionString: 't(\'Hello World\', \'app\', \'Computer is greeting\')',
+                    functionStringReplace: 't()',
                     identifier: 'Hello World',
                     startChar: 210,
                     endChar: 257
                 },
                 {
                     functionString: 't(\'Foo\')',
+                    functionStringReplace: 't()',
                     identifier: 'Foo',
                     startChar: 270,
                     endChar: 278
@@ -591,29 +691,34 @@ describe('Extract translation functions to gettext and to function dict', () => 
         {comment: 'Comment', path: 'https://www.example.com'}
     )`,
                     identifier: 'FooCaption',
+                    functionStringReplace: 't()',
                     startChar: 162,
                     endChar: 273
                 },
                 {
                     functionString: 't(\'Foo\')',
+                    functionStringReplace: 't()',
                     identifier: 'Foo',
                     startChar: 324,
                     endChar: 332
                 },
                 {
                     functionString: 't(\'Bar\')',
+                    functionStringReplace: 't()',
                     identifier: 'Bar',
                     startChar: 350,
                     endChar: 358
                 },
                 {
                     functionString: 't(\'Baz\')',
+                    functionStringReplace: 't()',
                     identifier: 'Baz',
                     startChar: 360,
                     endChar: 368
                 },
                 {
                     functionString: 't(\'Bax\', \'Context\', {comment: \'Comment\'})',
+                    functionStringReplace: 't()',
                     identifier: 'Bax',
                     startChar: 428,
                     endChar: 469
@@ -629,6 +734,7 @@ describe('Extract translation functions to gettext and to function dict', () => 
                 },
                 {PLACE: place}
             )`,
+                    functionStringReplace: 't({PLACE: place})',
                     identifier: 'Hello {PLACE}',
                     startChar: 486,
                     endChar: 820
@@ -696,6 +802,7 @@ describe('Extract translation functions to gettext and to function dict', () => 
             'src/file.js': [
                 {
                     functionString: '_(\'Foo\')',
+                    functionStringReplace: '_()',
                     identifier: '{"text":"Foo"}',
                     startChar: 10,
                     endChar: 18
@@ -1363,12 +1470,14 @@ export class Foo {
                 },
                 {
                     functionString: '_(\'Foo2\', \'Context\', \'Comment\')',
+                    functionStringReplace: '_()',
                     identifier: '{"text":"Foo2","context":"Context"}',
                     startChar: 143,
                     endChar: 174
                 },
                 {
                     functionString: '_(\'Bar2\', \'Context\', \'Comment\')',
+                    functionStringReplace: '_()',
                     identifier: '{"text":"Bar2","context":"Context"}',
                     startChar: 196,
                     endChar: 227
@@ -1498,6 +1607,7 @@ export class Foo {
             'tests/file.js': [
                 {
                     functionString: '_(\'Foo\', \'Context\', \'Comment\')',
+                    functionStringReplace: '_()',
                     identifier: '{"text":"Foo","context":"Context"}',
                     startChar: 37,
                     endChar: 67
