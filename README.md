@@ -159,30 +159,35 @@ the following functions:
         'Context',
         {comment: 'Comment', path: 'https://www.example.com'}
     )`,
+            functionStringReplace: '_()',
             identifier: '{"text":"FooCaption","context":"Context"}',
             startChar: 162,
             endChar: 273
         },                
         {
             functionString: "_('Foo')",
+            functionStringReplace: '_()',
             identifier: '{"text":"Foo"}',
             startChar: 324,
             endChar: 332
         },
         {
             functionString: "_('Bar')",
+            functionStringReplace: '_()',
             identifier: '{"text":"Bar"}',
             startChar: 350,
             endChar: 358
         },
         {
             functionString: "_('Baz')",
+            functionStringReplace: '_()',
             identifier: '{"text":"Baz"}',
             startChar: 360,
             endChar: 368
         },
         {
             functionString: "_('Bax')",
+            functionStringReplace: '_()',
             identifier: '{"text":"Bax"}',
             startChar: 428,
             endChar: 436
@@ -198,6 +203,7 @@ the following functions:
                 },
                 {PLACE: place}
             )`,
+            functionStringReplace: '_({PLACE: place})',
             identifier: '{"text":"Hello {PLACE}","context":"Context"}',
             startChar: 486,
             endChar: 820
