@@ -30,7 +30,7 @@ export interface IContext {
 
 export type IMessageMap = {[text: string]: IMessage};
 export type IContextMap = {[context: string]: IMessageMap};
-export type IFunctionDictData = Pick<IFunction, 'functionString' | 'startChar' | 'endChar' | 'identifier'>
+export type IFunctionDictData = Pick<IFunction, 'functionString' | 'startChar' | 'endChar' | 'identifier' | 'definition'>;
 export type IFunctionDict = Record<string, IFunctionDictData[]>;
 
 export class FunctionBuilder {
@@ -69,8 +69,10 @@ export class FunctionBuilder {
         return this.lastFunctions;
     }
 
-    public getFunctionsByFileName(fileName: string): IFunctionDict {
-        return Object.fromEntries(Object.entries(this.context).filter(([key, _]) => key === fileName));
+    public getFunctionsByFileName(fileName: string): IFunctionDictData[] {
+        return Object.entries(this.context)
+            .filter(([key, _]) => key === fileName)
+            .flatMap(([_, functionDictData]) => functionDictData);
     }
 }
 

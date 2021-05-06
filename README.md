@@ -235,7 +235,7 @@ and the mapping of identifiers to text as an object
 Create parser for parsing `.svelte` files
 
 ##### Return Value
-*SvelteParser* · Can be used in the same way as parser created with `createJsParser()`
+*SvelteParser* · Can be used in the same way as parser created with [`createJsParser()`](https://github.com/lukasgeiter/gettext-extractor/wiki/API-Reference#createjsparserextractors)
 
 ### <a id="get-functions"></a>&nbsp;&nbsp;`getFunctions()`
 Gets all parsed function calls
@@ -266,7 +266,7 @@ Gets all parsed function calls in a file
 | `fileName` | *string* | **Required** · Name of file |
 
 ##### Return Value
-*object* · Same as from [`getFunctions()`](#get-functions)
+*array* · Same as values of dictionary described in [`getFunctions()`](#get-functions)
 
 ### &nbsp;&nbsp;`saveFunctionJSON(fileName)`
 Save functions dictionary as a JSON file.

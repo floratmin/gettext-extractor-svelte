@@ -104,7 +104,7 @@ export class SvelteGettextExtractor {
         return this.functionBuilder.getLastAddedFunctions();
     }
 
-    public getFunctionsByFileName(fileName: string): IFunctionDict {
+    public getFunctionsByFileName(fileName: string): IFunctionDictData[] {
         return this.functionBuilder.getFunctionsByFileName(fileName);
     }
 
