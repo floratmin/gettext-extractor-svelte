@@ -414,10 +414,10 @@ function extractArguments(
             getComments(commentsExpression, undefined, commentOptions, commentsObject, message);
             message.comments = [...commentsObject.comment, ...commentsObject.otherComments, ...commentsObject.propComments, ...commentsObject.keyedComments];
             message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
-        } else if (commentsExpression && isTextLiteral(commentsExpression)) {
-            if (!isNullOrUndefined(commentsExpression)) {
-                message.comments = [...normalizeContent(commentsExpression.text, contentOptions).split('\n')];
-            }
+        } else if (commentsExpression && (isTextLiteral(commentsExpression))) {
+            message.comments = [...normalizeContent(commentsExpression.text, contentOptions).split('\n')];
+            message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
+        } else if (commentsExpression && isNullOrUndefined(commentsExpression)) {
             message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
         }
         return message;
