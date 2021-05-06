@@ -1,6 +1,7 @@
 import { SvelteGettextExtractor, callExpressionExtractor, ICustomJsExtractorOptions, FunctionExtractorBuilder } from '../src';
 import { IMessage } from 'gettext-extractor/dist/builder';
 import { HtmlExtractors } from 'gettext-extractor';
+import { IMessageData } from '../dist/parser';
 
 function i(strings: TemplateStringsArray): string {
     const stringArray = strings[0].split('\n');
@@ -1216,6 +1217,225 @@ export class Foo {
                     definition: true,
                     startChar: 44,
                     endChar: 123
+                }
+            ]
+        });
+    });
+    test('Extracts imports', () => {
+        const functionExtractor = new FunctionExtractorBuilder();
+        const findFunctionDeclaration = functionExtractor.importDeclaration(
+            'foo-module',
+            functionExtractor.importClause(
+                'Foo',
+                [functionExtractor.importSpecifier('bar', true)],
+                true),
+            true);
+        const options: ICustomJsExtractorOptions = {
+            arguments: {
+                text: 0,
+                context: 1,
+                comments: 2
+            },
+            translatorFunction:
+                {
+                    functionExtractor: findFunctionDeclaration,
+                    identifier: 'functionIdentifier'
+                }
+        };
+        const jsString = i`
+        import Foo, { bar } from 'foo-module';
+        `;
+
+        const extractor = new SvelteGettextExtractor();
+        extractor.createJsParser()
+            .addExtractor(callExpressionExtractor('_', options))
+            .parseString(jsString, './src/file.js');
+
+        expect(extractor.getFunctions()).toEqual({
+            'src/file.js': [
+                {
+                    functionString: i`
+                    bar
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 14,
+                    endChar: 17
+                },
+                {
+                    functionString: i`
+                    Foo, { bar }
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 7,
+                    endChar: 19
+                },
+                {
+                    functionString: i`
+                    import Foo, { bar } from 'foo-module';
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 0,
+                    endChar: 38
+                }
+            ]
+        });
+    });
+    test('Retrieves messages and functions dict from last call', () => {
+        const functionExtractor = new FunctionExtractorBuilder();
+        const options: ICustomJsExtractorOptions = {
+            arguments: {
+                text: 0,
+                context: 1,
+                comments: 2
+            },
+            translatorFunction: {
+                functionExtractor: functionExtractor.functionExpression('_', true),
+                identifier: 'foo-function'
+            }
+        };
+        const svelteFile1 = i`
+            <script lang="ts">
+                function _(text: string, context: string, comment: string): string {
+                    return 'Foo1';
+                }
+                const translate = _('Foo1', 'Context', 'Comment');
+            </script>
+
+            <p>{
+                _('Bar1', 'Context', 'Comment')
+            }</p>
+            `;
+        const svelteFile2 = i`
+            <script lang="ts">
+                function _(text: string, context: string, comment: string): string {
+                    return 'Foo2';
+                }
+                const translate = _('Foo2', 'Context', 'Comment');
+            </script>
+
+            <p>{
+                _('Bar2', 'Context', 'Comment')
+            }</p>
+            `;
+        const extractor = new SvelteGettextExtractor();
+        extractor.createSvelteParser()
+            .addExtractor(callExpressionExtractor('_', options))
+            .parseSvelteString(svelteFile1, 'src/App1.svelte')
+            .parseSvelteString(svelteFile2, 'src/App2.svelte');
+        expect(
+            extractor.getLastAddedMessages()
+        ).toEqual([
+            {
+                text: 'Foo2',
+                context: 'Context',
+                comments: ['Comment'],
+                references: [
+                    'src/App2.svelte:5'
+                ],
+                identifier: '{"text":"Foo2","context":"Context"}',
+                textPlural: null
+            },
+            {
+                text: 'Bar2',
+                context: 'Context',
+                comments: ['Comment'],
+                references: [
+                    'src/App2.svelte:9'
+                ],
+                identifier: '{"text":"Bar2","context":"Context"}',
+                textPlural: null
+            }
+        ]);
+
+        expect(extractor.getLastAddedFunctions()).toEqual(
+            [
+                {
+                    functionString: `function _(text: string, context: string, comment: string): string {
+        return 'Foo2';
+    }`,
+                    identifier: 'foo-function',
+                    definition: true,
+                    startChar: 23,
+                    endChar: 120
+                },
+                {
+                    functionString: '_(\'Foo2\', \'Context\', \'Comment\')',
+                    identifier: '{"text":"Foo2","context":"Context"}',
+                    startChar: 143,
+                    endChar: 174
+                },
+                {
+                    functionString: '_(\'Bar2\', \'Context\', \'Comment\')',
+                    identifier: '{"text":"Bar2","context":"Context"}',
+                    startChar: 196,
+                    endChar: 227
+                }
+            ]);
+    });
+    test('Extracts new expressions', () => {
+        const functionExtractor = new FunctionExtractorBuilder();
+        const findFunctionDeclaration = functionExtractor.variableStatement(
+            [functionExtractor.variableDeclaration(
+                'foo',
+                functionExtractor.newExpression(
+                    'Foo',
+                    true
+                ),
+                true)],
+            true
+        );
+        const options: ICustomJsExtractorOptions = {
+            arguments: {
+                text: 0,
+                context: 1,
+                comments: 2
+            },
+            translatorFunction:
+                {
+                    functionExtractor: findFunctionDeclaration,
+                    identifier: 'functionIdentifier'
+                }
+        };
+        const jsString = i`
+        const foo = new Foo('bar');
+        `;
+
+        const extractor = new SvelteGettextExtractor();
+        extractor.createJsParser()
+            .addExtractor(callExpressionExtractor('_', options))
+            .parseString(jsString, './src/file.js');
+
+        expect(extractor.getFunctions()).toEqual({
+            'src/file.js': [
+                {
+                    functionString: i`
+                    new Foo('bar')
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 12,
+                    endChar: 26
+                },
+                {
+                    functionString: i`
+                    foo = new Foo('bar')
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 6,
+                    endChar: 26
+                },
+                {
+                    functionString: i`
+                    const foo = new Foo('bar');
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 0,
+                    endChar: 27
                 }
             ]
         });

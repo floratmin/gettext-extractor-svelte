@@ -30,36 +30,43 @@ export interface IContext {
 
 export type IMessageMap = {[text: string]: IMessage};
 export type IContextMap = {[context: string]: IMessageMap};
-
-export type IFunctionDict = Record<string, Pick<IFunction, 'functionString' | 'startChar' | 'endChar' | 'identifier'>[]>;
+export type IFunctionDictData = Pick<IFunction, 'functionString' | 'startChar' | 'endChar' | 'identifier'>
+export type IFunctionDict = Record<string, IFunctionDictData[]>;
 
 export class FunctionBuilder {
     private context: IFunctionDict = {};
+    private lastFileName: string | undefined;
+    private lastFunctions: IFunctionDictData[] = [];
 
-    public addFunction(functionData: IFunction): void {
+    public addFunction(functionData: IFunction, fileName?: string): void {
+        const functionDictData: IFunctionDictData = {
+            functionString: functionData.functionString,
+            startChar: functionData.startChar,
+            endChar: functionData.endChar,
+            identifier: functionData.identifier,
+            ...(functionData.definition ? {definition: true} : {})
+        };
         if (this.context[functionData.fileName]) {
-            this.context[functionData.fileName].push({
-                functionString: functionData.functionString,
-                startChar: functionData.startChar,
-                endChar: functionData.endChar,
-                identifier: functionData.identifier,
-                ...(functionData.definition ? {definition: true} : {})
-            });
+            this.context[functionData.fileName].push(functionDictData);
         } else {
             this.context[functionData.fileName] = [
-                {
-                    functionString: functionData.functionString,
-                    startChar: functionData.startChar,
-                    endChar: functionData.endChar,
-                    identifier: functionData.identifier,
-                    ...(functionData.definition ? {definition: true} : {})
-                }
+                functionDictData
             ];
+        }
+        if (this.lastFileName !== fileName) {
+            this.lastFileName = fileName;
+            this.lastFunctions = [<IFunctionDictData>functionDictData];
+        } else {
+            this.lastFunctions.push(<IFunctionDictData>functionDictData);
         }
     }
 
     public getFunctions(): IFunctionDict {
         return this.context;
+    }
+
+    public getLastAddedFunctions(): IFunctionDictData[] {
+        return this.lastFunctions;
     }
 
     public getFunctionsByFileName(fileName: string): IFunctionDict {
@@ -72,6 +79,8 @@ export class FunctionBuilder {
 export class CatalogBuilder {
 
     private contexts: IContextMap = {};
+    private lastFileName: string | undefined;
+    private lastMessages: IMessage[] = [];
 
     private static compareStrings(a: string, b: string): number {
         return a.localeCompare(b);
@@ -113,7 +122,7 @@ export class CatalogBuilder {
         private stats?: IGettextExtractorStats
     ) {}
 
-    public addMessage(message: Partial<IMessage>): void {
+    public addMessage(message: Partial<IMessage>, fileName?: string): void {
         message = CatalogBuilder.normalizeMessage(message);
         let context = this.getOrCreateContext(message.context || '');
         if (context[message.text!]) {
@@ -134,11 +143,16 @@ export class CatalogBuilder {
                 this.stats && this.stats.numberOfPluralMessages++;
             }
         }
-
+        if (this.lastFileName !== fileName) {
+            this.lastFileName = fileName;
+            this.lastMessages = [<IMessage>message];
+        } else {
+            this.lastMessages.push(<IMessage>message);
+        }
         this.stats && this.stats.numberOfMessageUsages++;
     }
 
-    public getRawMessages(): IMessage[] {
+    public getMessagesWithId(): IMessage[] {
         let messages: IMessage[] = [];
         for (let context of Object.keys(this.contexts).sort(CatalogBuilder.compareStrings)) {
             messages = messages.concat(this.getMessagesByContext(context));
@@ -147,15 +161,19 @@ export class CatalogBuilder {
     }
 
     public getMessages(): IMessage[] {
-        return <IMessage []>this.getRawMessages().map(message => Object.fromEntries(Object.entries(message).filter(([key, _]) => key !== 'identifier')));
+        return <IMessage []>this.getMessagesWithId().map(message => Object.fromEntries(Object.entries(message).filter(([key, _]) => key !== 'identifier')));
+    }
+
+    public getLastAddedMessages(): IMessage[] {
+        return this.lastMessages;
     }
 
     public getMessageDictionary(): Record<string, string> {
-        return Object.fromEntries(this.getRawMessages().map(message => Object.entries(message).filter(([key, _]) => ['text', 'identifier'].includes(key)).map(([_, value]) => value).sort((a, b) => a === 'text' ? 1 : -1)));
+        return Object.fromEntries(this.getMessagesWithId().map(message => Object.entries(message).filter(([key, _]) => ['text', 'identifier'].includes(key)).map(([_, value]) => value).sort((a, b) => a === 'text' ? 1 : -1)));
     }
 
     public getTransformedMessages<T>(func: (messages: IMessage[]) => T): T {
-        return func(this.getRawMessages());
+        return func(this.getMessagesWithId());
     }
 
     public getContexts(): IContext[] {

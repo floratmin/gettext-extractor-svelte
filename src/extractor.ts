@@ -5,7 +5,7 @@ import { HtmlParser, IHtmlExtractorFunction } from './html/parser';
 import { StatsOutput } from 'gettext-extractor/dist/utils/output';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { SvelteParser } from './svelte/parser';
-import { FunctionBuilder, IFunctionDict, IFunction, CatalogBuilder, IMessage, IContext } from './builder';
+import { FunctionBuilder, IFunctionDict, IFunction, CatalogBuilder, IMessage, IContext, IFunctionDictData } from './builder';
 import { IJsExtractorFunction } from './js/parser';
 import { JsParser } from './js/parser';
 
@@ -53,7 +53,7 @@ export class SvelteGettextExtractor {
         return new SvelteParser(this.builder, this.functionBuilder, extractors, this.stats);
     }
 
-    public addMessage(message: IMessage): void {
+    public addMessage(message: IMessage, fileName?: string): void {
         Validate.required.stringProperty(message, 'message.text');
         Validate.optional.stringProperty(message, 'message.textPlural');
         Validate.optional.stringProperty(message, 'message.context');
@@ -61,11 +61,19 @@ export class SvelteGettextExtractor {
         Validate.optional.arrayProperty(message, 'message.comments');
         Validate.required.stringProperty(message, 'message.identifier');
 
-        this.builder.addMessage(message);
+        this.builder.addMessage(message, fileName);
     }
 
     public getMessages(): IMessage[] {
         return this.builder.getMessages();
+    }
+
+    public getMessagesWithId(): IMessage[] {
+        return this.builder.getMessagesWithId();
+    }
+
+    public getLastAddedMessages(): IMessage[] {
+        return this.builder.getLastAddedMessages();
     }
 
     public getContexts(): IContext[] {
@@ -84,12 +92,16 @@ export class SvelteGettextExtractor {
         return this.builder.getTransformedMessages(func);
     }
 
-    public addFunctions(functionData: IFunction): void {
-        this.functionBuilder.addFunction(functionData);
+    public addFunctions(functionData: IFunction, fileName?: string): void {
+        this.functionBuilder.addFunction(functionData, fileName);
     }
 
     public getFunctions(): IFunctionDict {
         return this.functionBuilder.getFunctions();
+    }
+
+    public getLastAddedFunctions(): IFunctionDictData[] {
+        return this.functionBuilder.getLastAddedFunctions();
     }
 
     public getFunctionsByFileName(fileName: string): IFunctionDict {

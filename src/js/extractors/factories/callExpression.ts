@@ -220,7 +220,7 @@ function getFunctionFromNode(node: ts.Node, nodeFinder: FunctionExtractor): Char
         return Object.entries(nodeFinder).filter(([prop, value]) => prop !== 'kind').reduce((all, entry) => {
             if (all) {
                 const [prop, value] = entry;
-                if (['name', 'left'].includes(prop) && value) {
+                if ((['name', 'left', 'moduleSpecifier'].includes(prop) || (prop === 'expression' && m[prop].text)) && value) {
                     const c = <TextNode>value;
                     const textProp = <'name' | 'left'>prop;
                     if (nodeFinder[textProp] && nodeFinder[textProp]?.kind === c.kind) {

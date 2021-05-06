@@ -5,6 +5,11 @@ export type TextNode = {
     text: string;
 };
 
+export type ModuleSpecifierNode = {
+    kind: ts.SyntaxKind.StringLiteral,
+    text: string;
+}
+
 export type FunctionExtractor = {
     kind: ts.SyntaxKind;
     name?: TextNode;
@@ -12,13 +17,18 @@ export type FunctionExtractor = {
     initializer?: FunctionExtractor;
     type?: FunctionExtractor;
     body?: FunctionExtractor;
+    declarationList?: FunctionExtractor;
+    declarations?: FunctionExtractor[];
+    moduleSpecifier?: ModuleSpecifierNode;
     properties?: FunctionExtractor [];
     members?: FunctionExtractor[];
     getPos?: boolean;
+    text?: string;
     expression?: {
         kind: ts.SyntaxKind;
         left?: TextNode;
         right?: FunctionExtractor;
+        text?: string;
     };
 };
 
@@ -146,6 +156,62 @@ export class FunctionExtractorBuilder {
         return {
             kind: ts.SyntaxKind.LabeledStatement,
             ...(statement ? {statement} : {}),
+            ...(getPos ? {getPos} : {})
+        };
+    }
+
+    public importDeclaration(moduleSpecifier: string, importClause?: FunctionExtractor, getPos: boolean = false): FunctionExtractor {
+        return {
+            kind: ts.SyntaxKind.ImportDeclaration,
+            moduleSpecifier: {
+                kind: ts.SyntaxKind.StringLiteral,
+                text: moduleSpecifier
+            },
+            ...(importClause ? {importClause} : {}),
+            ...(getPos ? {getPos} : {})
+        };
+    }
+
+    public importClause(name?: string, elements?: FunctionExtractor[], getPos: boolean = false): FunctionExtractor {
+        return {
+            kind: ts.SyntaxKind.ImportClause,
+            ...(name ? this.getName(name) : {}),
+            ...(elements ? {
+                namedBindings: {
+                    kind: ts.SyntaxKind.NamedImports,
+                    elements
+                }
+            } : {}),
+            ...(getPos ? {getPos} : {})
+        };
+    }
+
+    public importSpecifier(name: string, getPos: boolean = false): FunctionExtractor {
+        return {
+            kind: ts.SyntaxKind.ImportSpecifier,
+            ...this.getName(name),
+            ...(getPos ? {getPos} : {})
+        };
+    }
+
+    public variableStatement(declarations: FunctionExtractor[], getPos: boolean = false): FunctionExtractor {
+        return {
+            kind: ts.SyntaxKind.VariableStatement,
+            declarationList: {
+                kind: ts.SyntaxKind.VariableDeclarationList,
+                declarations
+            },
+            ...(getPos ? {getPos} : {})
+        };
+    }
+
+    public newExpression(expression: string, getPos: boolean = false): FunctionExtractor {
+        return {
+            kind: ts.SyntaxKind.NewExpression,
+            expression: {
+                kind: ts.SyntaxKind.Identifier,
+                text: expression
+            },
             ...(getPos ? {getPos} : {})
         };
     }

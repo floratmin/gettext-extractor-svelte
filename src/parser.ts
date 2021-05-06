@@ -116,6 +116,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
     public parseString(source: string, fileName?: string, options?: TParseOptions): this {
         Validate.required.string({source});
         Validate.optional.nonEmptyString({fileName});
+        fileName = fileName || Parser.STRING_LITERAL_FILENAME;
         this.validateParseOptions(options);
 
         if (!this.extractors.length) {
@@ -126,14 +127,14 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
             source = options.transformSource(source);
         }
 
-        let { messages, functionsData} = this.parse(source, fileName || Parser.STRING_LITERAL_FILENAME, options);
+        let { messages, functionsData} = this.parse(source, fileName, options);
 
         for (let message of messages) {
-            this.builder.addMessage(message);
+            this.builder.addMessage(message, fileName);
         }
 
         for (let functionData of functionsData) {
-            this.functionBuilder.addFunction(functionData);
+            this.functionBuilder.addFunction(functionData, fileName);
         }
 
         this.stats && this.stats.numberOfParsedFiles++;
