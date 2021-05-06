@@ -325,10 +325,8 @@ function getArgumentExpressionsArray(
 
     for (let i = 0; i < argTypes.length; i++) {
         if (typeFunctionArray[i](argumentArray[i])) {
-            if (!isNullOrUndefined(argumentArray[i])) {
-                // @ts-ignore
-                argumentExpressions[args[i]] = argumentArray[i];
-            }
+            // @ts-ignore
+            argumentExpressions[args[i]] = argumentArray[i];
         } else if (fallback) {
             const fallbackArgTypes = getFallback(argTypes.slice(i));
             if (fallbackArgTypes) {
@@ -400,11 +398,15 @@ function extractArguments(
             pos: [{pos: argumentExpressions.text.pos, end: argumentExpressions.text.end}]
         };
         if (argumentExpressions.textPlural) {
-            message.textPlural = normalizeContent(argumentExpressions.textPlural.text, contentOptions);
+            if (!isNullOrUndefined(argumentExpressions.textPlural)) {
+                message.textPlural = normalizeContent(argumentExpressions.textPlural.text, contentOptions);
+            }
             message.pos?.push({pos: argumentExpressions.textPlural.pos, end: argumentExpressions.textPlural.end});
         }
         if (argumentExpressions.context) {
-            message.context = normalizeContent(argumentExpressions.context.text, contentOptions);
+            if (!isNullOrUndefined(argumentExpressions.context)) {
+                message.context = normalizeContent(argumentExpressions.context.text, contentOptions);
+            }
             message.pos?.push({pos: argumentExpressions.context.pos, end: argumentExpressions.context.end});
         }
         if (commentsExpression && commentOptions && isObjectLiteralExpression(commentsExpression)) {
@@ -413,7 +415,9 @@ function extractArguments(
             message.comments = [...commentsObject.comment, ...commentsObject.otherComments, ...commentsObject.propComments, ...commentsObject.keyedComments];
             message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
         } else if (commentsExpression && isTextLiteral(commentsExpression)) {
-            message.comments = [...normalizeContent(commentsExpression.text, contentOptions).split('\n')];
+            if (!isNullOrUndefined(commentsExpression)) {
+                message.comments = [...normalizeContent(commentsExpression.text, contentOptions).split('\n')];
+            }
             message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
         }
         return message;

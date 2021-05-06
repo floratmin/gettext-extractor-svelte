@@ -343,6 +343,96 @@ describe('Extract translation functions to gettext and to function dict', () => 
             ]
         });
     });
+    test('Replaced function with undefined entry', () => {
+        const options: ICustomJsExtractorOptions = {
+            arguments: {
+                text: 0,
+                context: 1,
+                comments: 3
+            },
+            comments: {
+                commentString: 'comment',
+                props: {
+                    props: ['{', '}']
+                }
+            }
+        };
+        const svelteFile = i`
+            <script>
+                import Component from './Component.svelte';
+                const translate = _('Foo', undefined, {foo: bar}, {comment: 'Comment'});
+            </script>
+
+            <p>
+                {
+                    _('Bar', undefined, undefined, {comment: 'Comment', props: {BAR: 'Bar comment'}})
+                 +
+                    _('Baz', undefined, undefined, 'Comment')
+                }
+            </p>
+            `;
+
+        const extractor = getExtractor(svelteFile, options);
+        expect(
+            getMessagesFromExtractor(extractor)
+        ).toEqual(sortMessages([
+            {
+                text: 'Foo',
+                context: null,
+                comments: ['Comment'],
+                references: [
+                   'src/App.svelte:3'
+                ],
+                textPlural: null
+            },
+            {
+                text: 'Bar',
+                context: null,
+                comments: [
+                    'Comment',
+                    '{BAR}: Bar comment'
+                ],
+                references: [
+                    'src/App.svelte:8'
+                ],
+                textPlural: null
+            },
+            {
+                text: 'Baz',
+                comments: ['Comment'],
+                context: null,
+                references: [
+                    'src/App.svelte:10'
+                ],
+                textPlural: null
+            }
+        ]));
+        expect(extractor.getFunctions()).toEqual({
+            'src/App.svelte': [
+                {
+                    functionString: '_(\'Foo\', undefined, {foo: bar}, {comment: \'Comment\'})',
+                    functionStringReplace: '_({foo: bar})',
+                    identifier: '{"text":"Foo"}',
+                    startChar: 79,
+                    endChar: 132
+                },
+                {
+                    functionString: '_(\'Bar\', undefined, undefined, {comment: \'Comment\', props: {BAR: \'Bar comment\'}})',
+                    functionStringReplace: '_(undefined)',
+                    identifier: '{"text":"Bar"}',
+                    startChar: 163,
+                    endChar: 244
+                },
+                {
+                    functionString: '_(\'Baz\', undefined, undefined, \'Comment\')',
+                    functionStringReplace: '_(undefined)',
+                    identifier: '{"text":"Baz"}',
+                    startChar: 260,
+                    endChar: 301
+                }
+            ]
+        });
+    });
     test('Comments are objects/strings without fallback', () => {
         const options: ICustomJsExtractorOptions = {
             arguments: {
