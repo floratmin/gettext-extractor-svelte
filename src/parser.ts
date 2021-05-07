@@ -5,7 +5,7 @@ import { IGettextExtractorStats } from './extractor';
 import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { svelteFragmentDivider } from '@floratmin/svelte-fragment-divider';
-import { FunctionBuilder, IMessage, IFunction, IParsed, CatalogBuilder } from './builder';
+import { FunctionBuilder, IMessage, IFunction, TFunctionData, IParsed, CatalogBuilder } from './builder';
 
 export type Pos = {
     pos: number;
@@ -14,7 +14,7 @@ export type Pos = {
 
 export interface IFunctionData {
     functionString?: string;
-    functionStringReplace?: string;
+    functionData?: TFunctionData;
     fileName?: string;
     startChar?: number;
     endChar?: number;
@@ -84,7 +84,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
 
             const functionData: IFunction = {
                 functionString: data.functionString || '',
-                ...(data.functionStringReplace ? {functionStringReplace: data.functionStringReplace } : {}),
+                ...(data.functionData ? {functionData: data.functionData } : {}),
                 fileName: data.fileName,
                 startChar: <number>data.startChar,
                 endChar: <number>data.endChar,

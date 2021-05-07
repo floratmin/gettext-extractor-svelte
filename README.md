@@ -159,35 +159,50 @@ the following functions:
         'Context',
         {comment: 'Comment', path: 'https://www.example.com'}
     )`,
-            functionStringReplace: '_()',
+            functionData: {
+                functionName: '_',
+                functionArgs: []
+            },
             identifier: '{"text":"FooCaption","context":"Context"}',
             startChar: 162,
             endChar: 273
         },                
         {
             functionString: "_('Foo')",
-            functionStringReplace: '_()',
+            functionData: {
+                functionName: '_',
+                functionArgs: []
+            },
             identifier: '{"text":"Foo"}',
             startChar: 324,
             endChar: 332
         },
         {
             functionString: "_('Bar')",
-            functionStringReplace: '_()',
+            functionData: {
+                functionName: '_',
+                functionArgs: []
+            },
             identifier: '{"text":"Bar"}',
             startChar: 350,
             endChar: 358
         },
         {
             functionString: "_('Baz')",
-            functionStringReplace: '_()',
+            functionData: {
+                functionName: '_',
+                functionArgs: []
+            },
             identifier: '{"text":"Baz"}',
             startChar: 360,
             endChar: 368
         },
         {
             functionString: "_('Bax')",
-            functionStringReplace: '_()',
+            functionData: {
+                functionName: '_',
+                functionArgs: []
+            },
             identifier: '{"text":"Bax"}',
             startChar: 428,
             endChar: 436
@@ -203,7 +218,10 @@ the following functions:
                 },
                 {PLACE: place}
             )`,
-            functionStringReplace: '_({PLACE: place})',
+            functionData: {
+                functionName: '_',
+                functionArgs: ['{PLACE: place}']
+            },
             identifier: '{"text":"Hello {PLACE}","context":"Context"}',
             startChar: 486,
             endChar: 820
@@ -249,14 +267,14 @@ Gets all parsed function calls
 ##### Return Value
 *object* · Dictionary with keys of file name and values of a list of function objects with properties as described below
 
-| **Name**                | **Type** | **Details**                                                                             |
-|-------------------------|----------|-----------------------------------------------------------------------------------------|
-| `functionString`        | *string* | String of the function call in the source code                                          |
-| `functionStringReplace` | *string* | String of the function call stripped by text, textPlural, context and comment arguments |
-| `identifier`            | *string* | Identifier string constructed trough options.identifierKeys                             |
-| `definition`            | *true*   | When set marks that string is part of translation function definition                   |
-| `startChar`             | *number* | Index where the function call string starts                                             |
-| `endChar`               | *number* | Index where the function call string ends                                               |
+| **Name**         | **Type** | **Details**                                                                                                        |
+|------------------|----------|--------------------------------------------------------------------------------------------------------------------|
+| `functionString` | *string* | String of the function call in the source code                                                                     |
+| `functionData`   | *object* | Object containing name of function call and arguments without these defining text, textPlural, context and comment |
+| `identifier`     | *string* | Identifier string constructed trough options.identifierKeys                                                        |
+| `definition`     | *true*   | When set marks that string is part of translation function definition                                              |
+| `startChar`      | *number* | Index where the function call string starts                                                                        |
+| `endChar`        | *number* | Index where the function call string ends                                                                          |
 
 ### &nbsp;&nbsp;`getLastAddedFunctions()`
 Receive array of functions, which got added in the last call of `parseJsString`, `parseSvelteString`.

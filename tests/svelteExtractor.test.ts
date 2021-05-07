@@ -118,35 +118,50 @@ describe('Extract translation functions to gettext and to function dict', () => 
             'src/App.svelte': [
                 {
                     functionString: '_(\'Foo\', \'Context\', \'Comment\')',
-                    functionStringReplace: '_()',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: []
+                    },
                     identifier: '{"text":"Foo","context":"Context"}',
                     startChar: 89,
                     endChar: 119
                 },
                 {
                     functionString: '_(\'Bar\', \'Context\', \'Comment\')',
-                    functionStringReplace: '_()',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: []
+                    },
                     identifier: '{"text":"Bar","context":"Context"}',
                     startChar: 150,
                     endChar: 180
                 },
                 {
                     functionString: '_(\'Baz\', \'Context\', \'Comment\')',
-                    functionStringReplace: '_()',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: []
+                    },
                     identifier: '{"text":"Baz","context":"Context"}',
                     startChar: 196,
                     endChar: 226
                 },
                 {
                     functionString: '_(\'Bax\', \'Context\', \'Comment\')',
-                    functionStringReplace: '_()',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: []
+                    },
                     identifier: '{"text":"Bax","context":"Context"}',
                     startChar: 266,
                     endChar: 296
                 },
                 {
                     functionString: '_(\'Bay\', \'Context\', \'Comment\')',
-                    functionStringReplace: '_()',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: []
+                    },
                     identifier: '{"text":"Bay","context":"Context"}',
                     startChar: 311,
                     endChar: 341
@@ -321,21 +336,30 @@ describe('Extract translation functions to gettext and to function dict', () => 
             'src/App.svelte': [
                 {
                     functionString: '_(\'Foo\', undefined, \'Context\', {foo: bar}, {comment: \'Comment\'})',
-                    functionStringReplace: '_(undefined,{foo: bar})',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: ['undefined', '{foo: bar}']
+                    },
                     identifier: '{"text":"Foo","context":"Context"}',
                     startChar: 79,
                     endChar: 143
                 },
                 {
                     functionString: '_(\'Bar\', {bar: baz}, \'Context\', undefined, {comment: \'Comment\', props: {BAR: \'Bar comment\'}})',
-                    functionStringReplace: '_({bar: baz},undefined)',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: ['{bar: baz}', 'undefined']
+                    },
                     identifier: '{"text":"Bar","context":"Context"}',
                     startChar: 174,
                     endChar: 267
                 },
                 {
                     functionString: '_(\'Baz\', {baz: bax}, {comment: \'Comment\'})',
-                    functionStringReplace: '_({baz: bax})',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: ['{baz: bax}']
+                    },
                     identifier: '{"text":"Baz"}',
                     startChar: 283,
                     endChar: 325
@@ -411,21 +435,30 @@ describe('Extract translation functions to gettext and to function dict', () => 
             'src/App.svelte': [
                 {
                     functionString: '_(\'Foo\', undefined, {foo: bar}, {comment: \'Comment\'})',
-                    functionStringReplace: '_({foo: bar})',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: ['{foo: bar}']
+                    },
                     identifier: '{"text":"Foo"}',
                     startChar: 79,
                     endChar: 132
                 },
                 {
                     functionString: '_(\'Bar\', undefined, undefined, {comment: \'Comment\', props: {BAR: \'Bar comment\'}})',
-                    functionStringReplace: '_(undefined)',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: ['undefined']
+                    },
                     identifier: '{"text":"Bar"}',
                     startChar: 163,
                     endChar: 244
                 },
                 {
                     functionString: '_(\'Baz\', undefined, undefined, \'Comment\')',
-                    functionStringReplace: '_(undefined)',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: ['undefined']
+                    },
                     identifier: '{"text":"Baz"}',
                     startChar: 260,
                     endChar: 301
@@ -753,21 +786,30 @@ describe('Extract translation functions to gettext and to function dict', () => 
             'tests/App.svelte': [
                 {
                     functionString: 't(\'Welcome {NAME}\', \'app\', {comment: \'Welcoming the user\', props: {NAME: \'Name of user\'}}, {NAME: name})',
-                    functionStringReplace: 't({NAME: name})',
+                    functionData: {
+                        functionName: 't',
+                        functionArgs: ['{NAME: name}']
+                    },
                     identifier: 'Welcome {NAME}',
                     startChar: 80,
                     endChar: 184
                 },
                 {
                     functionString: 't(\'Hello World\', \'app\', \'Computer is greeting\')',
-                    functionStringReplace: 't()',
+                    functionData: {
+                        functionName: 't',
+                        functionArgs: []
+                    },
                     identifier: 'Hello World',
                     startChar: 210,
                     endChar: 257
                 },
                 {
                     functionString: 't(\'Foo\')',
-                    functionStringReplace: 't()',
+                    functionData: {
+                        functionName: 't',
+                        functionArgs: []
+                    },
                     identifier: 'Foo',
                     startChar: 270,
                     endChar: 278
@@ -781,34 +823,49 @@ describe('Extract translation functions to gettext and to function dict', () => 
         {comment: 'Comment', path: 'https://www.example.com'}
     )`,
                     identifier: 'FooCaption',
-                    functionStringReplace: 't()',
+                    functionData: {
+                        functionName: 't',
+                        functionArgs: []
+                    },
                     startChar: 162,
                     endChar: 273
                 },
                 {
                     functionString: 't(\'Foo\')',
-                    functionStringReplace: 't()',
+                    functionData: {
+                        functionName: 't',
+                        functionArgs: []
+                    },
                     identifier: 'Foo',
                     startChar: 324,
                     endChar: 332
                 },
                 {
                     functionString: 't(\'Bar\')',
-                    functionStringReplace: 't()',
+                    functionData: {
+                        functionName: 't',
+                        functionArgs: []
+                    },
                     identifier: 'Bar',
                     startChar: 350,
                     endChar: 358
                 },
                 {
                     functionString: 't(\'Baz\')',
-                    functionStringReplace: 't()',
+                    functionData: {
+                        functionName: 't',
+                        functionArgs: []
+                    },
                     identifier: 'Baz',
                     startChar: 360,
                     endChar: 368
                 },
                 {
                     functionString: 't(\'Bax\', \'Context\', {comment: \'Comment\'})',
-                    functionStringReplace: 't()',
+                    functionData: {
+                        functionName: 't',
+                        functionArgs: []
+                    },
                     identifier: 'Bax',
                     startChar: 428,
                     endChar: 469
@@ -824,7 +881,10 @@ describe('Extract translation functions to gettext and to function dict', () => 
                 },
                 {PLACE: place}
             )`,
-                    functionStringReplace: 't({PLACE: place})',
+                    functionData: {
+                        functionName: 't',
+                        functionArgs: ['{PLACE: place}']
+                    },
                     identifier: 'Hello {PLACE}',
                     startChar: 486,
                     endChar: 820
@@ -892,7 +952,10 @@ describe('Extract translation functions to gettext and to function dict', () => 
             'src/file.js': [
                 {
                     functionString: '_(\'Foo\')',
-                    functionStringReplace: '_()',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: []
+                    },
                     identifier: '{"text":"Foo"}',
                     startChar: 10,
                     endChar: 18
@@ -1560,14 +1623,20 @@ export class Foo {
                 },
                 {
                     functionString: '_(\'Foo2\', \'Context\', \'Comment\')',
-                    functionStringReplace: '_()',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: []
+                    },
                     identifier: '{"text":"Foo2","context":"Context"}',
                     startChar: 143,
                     endChar: 174
                 },
                 {
                     functionString: '_(\'Bar2\', \'Context\', \'Comment\')',
-                    functionStringReplace: '_()',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: []
+                    },
                     identifier: '{"text":"Bar2","context":"Context"}',
                     startChar: 196,
                     endChar: 227
@@ -1697,7 +1766,10 @@ export class Foo {
             'tests/file.js': [
                 {
                     functionString: '_(\'Foo\', \'Context\', \'Comment\')',
-                    functionStringReplace: '_()',
+                    functionData: {
+                        functionName: '_',
+                        functionArgs: []
+                    },
                     identifier: '{"text":"Foo","context":"Context"}',
                     startChar: 37,
                     endChar: 67

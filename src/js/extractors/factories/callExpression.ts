@@ -7,6 +7,7 @@ import { JsUtils } from 'gettext-extractor/dist/js/utils';
 import { IAddFunctionCallBack, IFunctionData, IMessageData, Pos } from '../../../parser';
 import { IJsExtractorFunction } from '../../parser';
 import { FunctionExtractor, TextNode } from '../functionExtractors';
+import { TFunctionData } from '../../../builder';
 
 interface ICommentOptions {
     commentString?: string;
@@ -281,8 +282,18 @@ function getData(node: ts.Node, source: string, startChar: number, messageIdenti
         startChar: startChar + node.pos + diff,
         endChar: startChar + node.end,
         functionString: source.slice(node.pos + diff, node.end),
-        functionStringReplace: functionString.slice(diff).replace(/\s*,?\s*\)$/, ')'),
+        functionData: getFunctionData(functionString.slice(diff).replace(/\s*,?\s*\)$/, ')')),
         identifier: messageIdentifier
+    };
+}
+
+function getFunctionData(functionString: string): TFunctionData {
+    const sourceFile = ts.createSourceFile('', functionString, ts.ScriptTarget.Latest, true);
+    const expressionStatement = (<ts.CallExpression>(<ts.ExpressionStatement>sourceFile.statements[0]).expression);
+    const args = expressionStatement.arguments;
+    return {
+        functionName: (<ts.Identifier>expressionStatement.expression).text,
+        functionArgs: args.map(arg => functionString.slice(arg.pos, arg.end))
     };
 }
 
