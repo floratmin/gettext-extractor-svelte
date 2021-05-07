@@ -267,14 +267,16 @@ Gets all parsed function calls
 ##### Return Value
 *object* · Dictionary with keys of file name and values of a list of function objects with properties as described below
 
-| **Name**         | **Type** | **Details**                                                                                                        |
-|------------------|----------|--------------------------------------------------------------------------------------------------------------------|
-| `functionString` | *string* | String of the function call in the source code                                                                     |
-| `functionData`   | *object* | Object containing name of function call and arguments without these defining text, textPlural, context and comment |
-| `identifier`     | *string* | Identifier string constructed trough options.identifierKeys                                                        |
-| `definition`     | *true*   | When set marks that string is part of translation function definition                                              |
-| `startChar`      | *number* | Index where the function call string starts                                                                        |
-| `endChar`        | *number* | Index where the function call string ends                                                                          |
+| **Name**              | **Type**   | **Details**                                                                |
+|-----------------------|------------|----------------------------------------------------------------------------|
+| `functionString`      | *string*   | String of the function call in the source code                             |
+| `functionData`        | *object*   | Object containing keys functionName and functionArgs                       |
+| →&nbsp;`functionName` | *string*   | Name of the called function                                                |
+| →&nbsp;`functionArgs` | *string[]* | Arguments without arguments defining text, textPlural, context and comment |
+| `identifier`          | *string*   | Identifier string constructed trough options.identifierKeys                |
+| `definition`          | *true*     | When set marks that string is part of translation function definition      |
+| `startChar`           | *number*   | Index where the function call string starts                                |
+| `endChar`             | *number*   | Index where the function call string ends                                  |
 
 ### &nbsp;&nbsp;`getLastAddedFunctions()`
 Receive array of functions, which got added in the last call of `parseJsString`, `parseSvelteString`.
