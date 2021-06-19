@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as pofile from 'pofile';
+import pofile from 'pofile';
 
 import { HtmlParser, IHtmlExtractorFunction } from './html/parser';
 import { StatsOutput } from 'gettext-extractor/dist/utils/output';
