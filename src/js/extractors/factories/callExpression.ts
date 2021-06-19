@@ -61,7 +61,7 @@ type CommentsObject = {
    keyedComments: string[];
 };
 
-export function callExpressionExtractor(calleeName: string | string[], options: ICustomJsExtractorOptions): IJsExtractorFunction {
+export function callExpressionExtractor(calleeName: string | string[], options?: ICustomJsExtractorOptions): IJsExtractorFunction {
     Validate.required.argument({calleeName});
     let calleeNames = ([] as string[]).concat(calleeName);
 
@@ -71,6 +71,9 @@ export function callExpressionExtractor(calleeName: string | string[], options: 
         }
     }
 
+    if (!options) {
+        options = {};
+    }
     validateCustomOptions(options);
     if (!options.arguments) {
         options.arguments = {
@@ -122,11 +125,20 @@ export function callExpressionExtractor(calleeName: string | string[], options: 
         }
     }
 
-    return (node: ts.Node, sourceFile: ts.SourceFile, addMessage: IAddMessageCallback, addFunction?: IAddFunctionCallBack, startChar?: number, source?: string) => {
+    return (
+        node: ts.Node,
+        sourceFile: ts.SourceFile,
+        addMessage: IAddMessageCallback,
+        addFunction?: IAddFunctionCallBack,
+        startChar?: number,
+        source?: string
+    ) => {
         startChar = startChar || 0;
 
-        if (source && options.translatorFunction && addFunction) {
-            const translatorFunctions = Array.isArray(options.translatorFunction) ? options.translatorFunction : [options.translatorFunction];
+        if (source && (<ICustomJsExtractorOptions>options).translatorFunction && addFunction) {
+            const translatorFunctions = Array.isArray((<ICustomJsExtractorOptions>options).translatorFunction)
+                ? <TTranslatorFunction[]>(<ICustomJsExtractorOptions>options).translatorFunction
+                : [<TTranslatorFunction>(<ICustomJsExtractorOptions>options).translatorFunction];
             translatorFunctions.forEach(translatorFunction => {
                 if (!translatorFunction.restrictToFile || translatorFunction.restrictToFile === sourceFile.fileName) {
                     const functionExtractor = translatorFunction.functionExtractor;
@@ -165,9 +177,14 @@ export function callExpressionExtractor(calleeName: string | string[], options: 
             ), false);
 
             if (matches) {
-                let message = extractArguments(callExpression, <IArgumentIndexMapping>options.arguments, contentOptions, commentOptions);
+                let message = extractArguments(
+                    callExpression,
+                    <IArgumentIndexMapping>(<ICustomJsExtractorOptions>options).arguments,
+                    contentOptions,
+                    commentOptions
+                );
                 if (message) {
-                    const identifierKey = getIdentifierKey(message, sourceFile.fileName, options.identifierKeys);
+                    const identifierKey = getIdentifierKey(message, sourceFile.fileName, (<ICustomJsExtractorOptions>options).identifierKeys);
                     message.identifier = identifierKey;
                     if (addFunction && source) {
                         addFunction(getData(callExpression, source, startChar, identifierKey, <Pos []>message.pos));
@@ -189,7 +206,9 @@ export function getIdentifierKey(message: IMessageData, fileName: string, identi
             identifier.push({[key]: <string>message[key]});
         });
         if (identifier.filter(e => Object.values(e)[0] !== undefined).length > 0) {
-            return JSON.stringify(identifier.reduce((dict, entry) => Object.values(entry)[0] !== undefined ? Object.assign(dict, entry) : dict, {}));
+            return JSON.stringify(identifier
+                .reduce((dict, entry) => Object.values(entry)[0] !== undefined ? Object.assign(dict, entry) : dict, {})
+            );
         }
         failingKeys = identifier.filter(e => Object.values(e)[0] === undefined).map(e => Object.keys(e)[0]);
     } else {
@@ -199,7 +218,9 @@ export function getIdentifierKey(message: IMessageData, fileName: string, identi
         }
         failingKeys.push(keys[0]);
     }
-    throw new Error(`Identifier from key(s) ${JSON.stringify(failingKeys)} for message ${JSON.stringify(message)} in file ${fileName} could not be generated. Make sure that at least one key exists on every message.`);
+    throw new Error(`Identifier from key(s) ${JSON.stringify(failingKeys)} for message ${JSON.stringify(message)} in file ${
+        fileName
+    } could not be generated. Make sure that at least one key exists on every message.`);
 }
 
 function checkPosLength(nodeFinder: FunctionExtractor, posList: CharPos | false): boolean {
@@ -227,7 +248,7 @@ type CharPos = {pos: number, end: number}[];
 function getFunctionFromNode(node: ts.Node, nodeFinder: FunctionExtractor): CharPos | false {
     if (node.kind === nodeFinder.kind) {
         const m = <any>node;
-        return Object.entries(nodeFinder).filter(([prop, value]) => prop !== 'kind').reduce((all, entry) => {
+        return Object.entries(nodeFinder).filter(([prop, _]) => prop !== 'kind').reduce((all, entry) => {
             if (all) {
                 const [prop, value] = entry;
                 if ((['name', 'left', 'moduleSpecifier'].includes(prop) || (prop === 'expression' && m[prop].text)) && value) {
@@ -244,10 +265,10 @@ function getFunctionFromNode(node: ts.Node, nodeFinder: FunctionExtractor): Char
                     all = ([...all, {pos: <number>(m.pos), end: <number>(m.end)}]);
                     return all;
                 } else if (['properties', 'members'].includes(prop) && value) {
-                    const foundNodes = (<FunctionExtractor []>value).flatMap(v => m[prop].map((p: any) => getFunctionFromNode(p, v)).filter((s: any) => s && s.length > 0));
+                    const foundNodes = (<FunctionExtractor []>value)
+                        .flatMap(v => m[prop].map((p: any) => getFunctionFromNode(p, v)).filter((s: any) => s && s.length > 0));
                     if (foundNodes) {
-                        const res = [...all, ...foundNodes.flatMap(nodes => <CharPos>nodes).filter(pos => pos)];
-                        return res;
+                        return [...all, ...foundNodes.flatMap(nodes => <CharPos>nodes).filter(pos => pos)];
                     }
                 } else {
                     const foundNodes = getFunctionFromNode(m[prop], <FunctionExtractor>value);
