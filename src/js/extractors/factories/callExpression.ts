@@ -17,7 +17,7 @@ interface ICommentOptions {
 }
 
 interface IArgumentIndexMapping {
-    text: number;
+    text?: number;
     textPlural?: number;
     context?: number;
     comments?: number;
@@ -32,7 +32,7 @@ export type TTranslatorFunction = {
 export type IdentifierKey = 'text' | 'textPlural' | 'context';
 
 export interface ICustomJsExtractorOptions {
-    arguments: IArgumentIndexMapping;
+    arguments?: IArgumentIndexMapping;
     comments?: ICommentOptions;
     content?: IContentOptions;
     translatorFunction?: TTranslatorFunction | TTranslatorFunction[];
@@ -72,6 +72,14 @@ export function callExpressionExtractor(calleeName: string | string[], options: 
     }
 
     validateCustomOptions(options);
+    if (!options.arguments) {
+        options.arguments = {
+            text: 0
+        };
+    }
+    if (!options.arguments.text) {
+        options.arguments.text = 0;
+    }
     validateContentOptions(options);
     Validate.optional.numberProperty(options, 'options.arguments.comments');
     let contentOptions: IContentOptions = {
@@ -157,7 +165,7 @@ export function callExpressionExtractor(calleeName: string | string[], options: 
             ), false);
 
             if (matches) {
-                let message = extractArguments(callExpression, options.arguments, contentOptions, commentOptions);
+                let message = extractArguments(callExpression, <IArgumentIndexMapping>options.arguments, contentOptions, commentOptions);
                 if (message) {
                     const identifierKey = getIdentifierKey(message, sourceFile.fileName, options.identifierKeys);
                     message.identifier = identifierKey;
@@ -298,13 +306,12 @@ function getFunctionData(functionString: string): TFunctionData {
 }
 
 function validateCustomOptions(options: ICustomJsExtractorOptions): void {
-    Validate.required.numberProperty(options, 'options.arguments.text');
+    Validate.optional.numberProperty(options, 'options.arguments.text');
     Validate.optional.numberProperty(options, 'options.arguments.textPlural');
     Validate.optional.numberProperty(options, 'options.arguments.context');
     Validate.optional.numberProperty(options, 'options.arguments.comments');
     Validate.optional.booleanProperty(options, 'options.comments.throwWhenMalformed');
     Validate.optional.stringProperty(options, 'options.comments.commentString');
-
     if (options.comments && options.comments.props) {
         Object.entries(options.comments.props).forEach(([key, value]) => {
            if (!(Array.isArray(value) && typeof value[0] === 'string' && typeof value[1] === 'string')) {
