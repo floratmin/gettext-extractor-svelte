@@ -1541,6 +1541,68 @@ export class Foo {
             ]
         });
     });
+    test('Extracts imports single', () => {
+        const functionExtractor = new FunctionExtractorBuilder();
+        const findFunctionDeclaration = functionExtractor.importDeclaration(
+            './foo-module',
+            functionExtractor.importClause(
+                undefined,
+                [functionExtractor.importSpecifier('bar', true)],
+                true),
+            true);
+        const options: ICustomJsExtractorOptions = {
+            arguments: {
+                text: 0,
+                context: 1,
+                comments: 2
+            },
+            translatorFunction:
+                {
+                    functionExtractor: findFunctionDeclaration,
+                    identifier: 'functionIdentifier'
+                }
+        };
+        const jsString = i`
+        import { bar } from './foo-module';
+        `;
+
+        const extractor = new SvelteGettextExtractor();
+        extractor.createJsParser()
+            .addExtractor(callExpressionExtractor('_', options))
+            .parseString(jsString, './src/file.js');
+
+        expect(extractor.getFunctions()).toEqual({
+            'src/file.js': [
+                {
+                    functionString: i`
+                    bar
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 9,
+                    endChar: 12
+                },
+                {
+                    functionString: i`
+                    { bar }
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 7,
+                    endChar: 14
+                },
+                {
+                    functionString: i`
+                    import { bar } from './foo-module';
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 0,
+                    endChar: 35
+                }
+            ]
+        });
+    });
     test('Retrieves messages and functions dict from last call', () => {
         const functionExtractor = new FunctionExtractorBuilder();
         const options: ICustomJsExtractorOptions = {
