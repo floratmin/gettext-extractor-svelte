@@ -4,6 +4,7 @@ import { FunctionBuilder, IParsed } from '../builder';
 import { CatalogBuilder } from '../builder';
 import { IGettextExtractorStats } from 'gettext-extractor/dist/extractor';
 import { IJsExtractorFunction, IJsParseOptions } from '../js/parser';
+import { TTranslatorFunction } from '../js/extractors/factories/callExpression';
 
 export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> {
 
@@ -22,10 +23,19 @@ export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> 
 
     protected parse(source: string, fileName: string, options: IJsParseOptions = {}): IParsed {
         let sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, options.scriptKind);
-        return this.parseNode(sourceFile, sourceFile, options.lineNumberStart || 1, options.startChar || 0, source);
+        return this.parseNode(
+            sourceFile,
+            sourceFile,
+            options.lineNumberStart || 1,
+            options.startChar || 0,
+            source,
+            options.translatorFunctions
+        );
     }
 
-    protected parseNode(node: ts.Node, sourceFile: ts.SourceFile, lineNumberStart: number, startChar: number, source: string): IParsed {
+    protected parseNode(
+        node: ts.Node, sourceFile: ts.SourceFile, lineNumberStart: number, startChar: number, source: string, translatorFunctions?: TTranslatorFunction[]
+    ): IParsed {
         let parsed: IParsed = {
             messages: [],
             functionsData: []
@@ -45,11 +55,11 @@ export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> 
         });
 
         for (let extractor of this.extractors) {
-            extractor(node, sourceFile, addMessageCallback, addFunctionCallback, startChar, source);
+            extractor(node, sourceFile, addMessageCallback, addFunctionCallback, startChar, source, translatorFunctions);
         }
 
         ts.forEachChild(node, n => {
-            const {messages, functionsData } = this.parseNode(n, sourceFile, lineNumberStart, startChar, source);
+            const {messages, functionsData } = this.parseNode(n, sourceFile, lineNumberStart, startChar, source, translatorFunctions);
             parsed.messages = parsed.messages.concat(messages);
             parsed.functionsData = parsed.functionsData.concat(functionsData);
         });

@@ -1513,21 +1513,21 @@ export class Foo {
             'src/file.js': [
                 {
                     functionString: i`
-                    bar
-                    `,
-                    identifier: 'functionIdentifier',
-                    definition: true,
-                    startChar: 14,
-                    endChar: 17
-                },
-                {
-                    functionString: i`
                     Foo, { bar }
                     `,
                     identifier: 'functionIdentifier',
                     definition: true,
                     startChar: 7,
                     endChar: 19
+                },
+                {
+                    functionString: i`
+                    bar
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 14,
+                    endChar: 17
                 },
                 {
                     functionString: i`
@@ -1575,21 +1575,21 @@ export class Foo {
             'src/file.js': [
                 {
                     functionString: i`
-                    bar
-                    `,
-                    identifier: 'functionIdentifier',
-                    definition: true,
-                    startChar: 9,
-                    endChar: 12
-                },
-                {
-                    functionString: i`
                     { bar }
                     `,
                     identifier: 'functionIdentifier',
                     definition: true,
                     startChar: 7,
                     endChar: 14
+                },
+                {
+                    functionString: i`
+                    bar
+                    `,
+                    identifier: 'functionIdentifier',
+                    definition: true,
+                    startChar: 9,
+                    endChar: 12
                 },
                 {
                     functionString: i`

@@ -9,7 +9,9 @@ export type Node = parse5.DefaultTreeNode;
 export type TextNode = parse5.DefaultTreeTextNode;
 export type Element = parse5.DefaultTreeElement;
 
-export type IHtmlExtractorFunction = (node: Node, fileName: string, addMessage: IAddMessageCallback, addFunction?: IAddFunctionCallBack, startChar?: number, source?: string) => void;
+export type IHtmlExtractorFunction = (
+    node: Node, fileName: string, addMessage: IAddMessageCallback, addFunction?: IAddFunctionCallBack, startChar?: number, source?: string
+) => void;
 
 export class HtmlParser extends Parser<IHtmlExtractorFunction, IParseOptions> {
 

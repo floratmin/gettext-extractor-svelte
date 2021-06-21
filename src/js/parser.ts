@@ -5,8 +5,17 @@ import { FunctionBuilder, IParsed, CatalogBuilder } from '../builder';
 import { IParseOptions } from '../parser';
 import { IGettextExtractorStats } from '../extractor';
 import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
+import { TTranslatorFunction } from './extractors/factories/callExpression';
 
-export type IJsExtractorFunction = (node: ts.Node, sourceFile: ts.SourceFile, addMessage: IAddMessageCallback, addFunction?: IAddFunctionCallBack, startChar?: number, source?: string) => void;
+export type IJsExtractorFunction = (
+    node: ts.Node,
+    sourceFile: ts.SourceFile,
+    addMessage: IAddMessageCallback,
+    addFunction?: IAddFunctionCallBack,
+    startChar?: number,
+    source?: string,
+    translatorFunctions?: TTranslatorFunction[]
+) => void;
 
 export interface IJsParseOptions extends IParseOptions {
     scriptKind?: ts.ScriptKind;
@@ -29,10 +38,19 @@ export class JsParser extends Parser<IJsExtractorFunction, IParseOptions> {
 
     protected parse(source: string, fileName: string, options: IJsParseOptions = {}): IParsed {
         let sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, options.scriptKind);
-        return this.parseNode(sourceFile, sourceFile, options.lineNumberStart || 1, options.startChar || 0, source);
+        return this.parseNode(
+            sourceFile,
+            sourceFile,
+            options.lineNumberStart || 1,
+            options.startChar || 0,
+            source,
+            options.translatorFunctions
+        );
     }
 
-    protected parseNode(node: ts.Node, sourceFile: ts.SourceFile, lineNumberStart: number, startChar: number, source: string): IParsed {
+    protected parseNode(
+        node: ts.Node, sourceFile: ts.SourceFile, lineNumberStart: number, startChar: number, source: string, translatorFunctions?: TTranslatorFunction[]
+    ): IParsed {
         let parsed: IParsed = {
             messages: [],
             functionsData: []
@@ -51,11 +69,11 @@ export class JsParser extends Parser<IJsExtractorFunction, IParseOptions> {
         });
 
         for (let extractor of this.extractors) {
-            extractor(node, sourceFile, addMessageCallback, addFunctionCallback, startChar, source);
+            extractor(node, sourceFile, addMessageCallback, addFunctionCallback, startChar, source, translatorFunctions);
         }
 
         ts.forEachChild(node, n => {
-            const {messages, functionsData } = this.parseNode(n, sourceFile, lineNumberStart, startChar, source);
+            const {messages, functionsData } = this.parseNode(n, sourceFile, lineNumberStart, startChar, source, translatorFunctions);
             parsed.messages = parsed.messages.concat(messages);
             parsed.functionsData = parsed.functionsData.concat(functionsData);
         });

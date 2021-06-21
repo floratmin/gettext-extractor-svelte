@@ -6,6 +6,7 @@ import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { svelteFragmentDivider } from '@floratmin/svelte-fragment-divider';
 import { FunctionBuilder, IMessage, IFunction, TFunctionData, IParsed, CatalogBuilder } from './builder';
+import { TTranslatorFunction } from './js/extractors/factories/callExpression';
 
 export type Pos = {
     pos: number;
@@ -39,6 +40,7 @@ export interface IParseOptions {
     lineNumberStart?: number;
     transformSource?: (source: string) => string;
     startChar?: number;
+    translatorFunctions?: TTranslatorFunction[];
 }
 
 export abstract class Parser<TExtractorFunction extends Function, TParseOptions extends IParseOptions> {
@@ -115,7 +117,13 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
                 this.parseString(
                     jsFragment.fragment,
                     fileName,
-                    <TParseOptions>{...options, ...{lineNumberStart: jsFragment.startLine + (options?.lineNumberStart || 0), startChar: jsFragment.startChar + (options?.startChar || 0)}}
+                    <TParseOptions>{
+                        ...options,
+                        ...{
+                            lineNumberStart: jsFragment.startLine + (options?.lineNumberStart || 0),
+                            startChar: jsFragment.startChar + (options?.startChar || 0)
+                        }
+                    }
                 );
             });
         return this;
@@ -189,6 +197,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
     protected validateParseOptions(options?: TParseOptions): void {
         Validate.optional.numberProperty(options, 'options.lineNumberStart');
         Validate.optional.functionProperty(options, 'options.transformSource');
+        Validate.optional.functionProperty(options, 'options.functionExtractors');
     }
 
     protected validateExtractors(...extractors: TExtractorFunction[]): void {

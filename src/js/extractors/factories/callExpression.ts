@@ -27,6 +27,7 @@ export type TTranslatorFunction = {
     restrictToFile?: string;
     functionExtractor: FunctionExtractor;
     identifier?: string;
+    functionName?: string;
 };
 
 export type IdentifierKey = 'text' | 'textPlural' | 'context';
@@ -131,27 +132,37 @@ export function callExpressionExtractor(calleeName: string | string[], options?:
         addMessage: IAddMessageCallback,
         addFunction?: IAddFunctionCallBack,
         startChar?: number,
-        source?: string
+        source?: string,
+        translatorFunctionsByFile?: TTranslatorFunction | TTranslatorFunction[]
     ) => {
         startChar = startChar || 0;
 
-        if (source && (<ICustomJsExtractorOptions>options).translatorFunction && addFunction) {
-            const translatorFunctions = Array.isArray((<ICustomJsExtractorOptions>options).translatorFunction)
-                ? <TTranslatorFunction[]>(<ICustomJsExtractorOptions>options).translatorFunction
-                : [<TTranslatorFunction>(<ICustomJsExtractorOptions>options).translatorFunction];
+        if (source && ((<ICustomJsExtractorOptions>options).translatorFunction || translatorFunctionsByFile) && addFunction) {
+            let translatorFunctions = translatorFunctionsByFile
+                ? Array.isArray(translatorFunctionsByFile)
+                    ? translatorFunctionsByFile
+                    : [translatorFunctionsByFile]
+                : [];
+            if ((<ICustomJsExtractorOptions>options).translatorFunction) {
+                translatorFunctions.push(...(Array.isArray((<ICustomJsExtractorOptions>options).translatorFunction)
+                    ? <TTranslatorFunction[]>(<ICustomJsExtractorOptions>options).translatorFunction
+                    : [<TTranslatorFunction>(<ICustomJsExtractorOptions>options).translatorFunction]));
+            }
             translatorFunctions.forEach(translatorFunction => {
                 if (!translatorFunction.restrictToFile || translatorFunction.restrictToFile === sourceFile.fileName) {
                     const functionExtractor = translatorFunction.functionExtractor;
                     const functionNodes = getFunctionFromNode(node, functionExtractor);
-
                     if (functionNodes) {
-                        // console.log(node)
                         if (checkPosLength(functionExtractor, functionNodes)) {
                             functionNodes.forEach(slice => {
                                 const functionString = source.slice(slice.pos, slice.end);
                                 const diff = getDiff(functionString);
                                 const functionData: IFunctionData = {
                                     functionString: functionString.slice(diff),
+                                    ...(translatorFunction.functionName ? {functionData: {
+                                        functionName: translatorFunction.functionName,
+                                            functionArgs: []
+                                    }} : {}),
                                     startChar: slice.pos + diff,
                                     endChar: slice.end,
                                     fileName: sourceFile.fileName,
@@ -161,7 +172,9 @@ export function callExpressionExtractor(calleeName: string | string[], options?:
                                 addFunction(functionData);
                             });
                         } else {
-                            throw new Error(`Could not find function specified by functionExtractor${sourceFile.fileName ? ` in file ${sourceFile.fileName}` : ''}`);
+                            throw new Error(`Could not find function specified by functionExtractor${
+                                sourceFile.fileName ? ` in file ${sourceFile.fileName}` : ''
+                            }`);
                         }
                     }
 
@@ -269,6 +282,41 @@ function getFunctionFromNode(node: ts.Node, nodeFinder: FunctionExtractor): Char
                         .flatMap(v => m[prop].map((p: any) => getFunctionFromNode(p, v)).filter((s: any) => s && s.length > 0));
                     if (foundNodes) {
                         return [...all, ...foundNodes.flatMap(nodes => <CharPos>nodes).filter(pos => pos)];
+                    }
+                } else if (['elements'].includes(prop) && value) {
+                    let foundNodes = (<FunctionExtractor []>value)
+                        .flatMap(v => m[prop].map((p: any) => getFunctionFromNode(p, v))); // .filter((s: any) => s && s.length > 0));
+                    if (foundNodes.some((s) => s)) {
+                        foundNodes = foundNodes.filter((s: any) => s && s.length > 0);
+                        if (foundNodes) {
+                            return [...all, ...foundNodes.flatMap(nodes => <CharPos>nodes).filter(pos => pos)];
+                        }
+                    }
+                } else if (prop === 'importClause' && value) {
+                    let foundName: false | CharPos = false;
+                    const name = (<FunctionExtractor>value).name;
+                    if (name) {
+                        if (m[prop].name) {
+                            const {text} = <ts.Identifier>m[prop].name;
+                            if (text === name.text) {
+                                foundName = [];
+                            }
+                        }
+                    }
+                    let foundElements: false | CharPos = false;
+                    if (m[prop].namedBindings && (<ts.ImportClause>value).namedBindings) {
+                        foundElements = (<ts.ImportClause>value).namedBindings && m[prop].namedBindings
+                            ? getFunctionFromNode(m[prop].namedBindings, <FunctionExtractor>(<ts.ImportClause>value).namedBindings)
+                            : false;
+                    }
+                    if ((<FunctionExtractor>value).getPos) {
+                        all = ([...all, {pos: <number>(m[prop].pos), end: <number>(m[prop].end)}]);
+                    }
+                    if (foundElements && (!name || foundName)) {
+                        return [...all, ...foundElements];
+                    }
+                    if (foundName) {
+                        return all;
                     }
                 } else {
                     const foundNodes = getFunctionFromNode(m[prop], <FunctionExtractor>value);
