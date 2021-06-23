@@ -54,12 +54,20 @@ export class SvelteGettextExtractor {
     }
 
     public addMessage(message: IMessage, fileName?: string): void {
-        Validate.required.stringProperty(message, 'message.text');
-        Validate.optional.stringProperty(message, 'message.textPlural');
-        Validate.optional.stringProperty(message, 'message.context');
+        if (message.text !== null) {
+            Validate.required.stringProperty(message, 'message.text');
+        }
+        if ('textPlural' in message && message.textPlural !== null) {
+            Validate.optional.stringProperty(message, 'message.textPlural');
+        }
+        if ('context' in message && message.context !== null) {
+            Validate.optional.stringProperty(message, 'message.context');
+        }
         Validate.optional.arrayProperty(message, 'message.references');
         Validate.optional.arrayProperty(message, 'message.comments');
-        Validate.required.stringProperty(message, 'message.identifier');
+        if ('identifier' in message && message.identifier !== null) {
+            Validate.required.stringProperty(message, 'message.identifier');
+        }
 
         this.builder.addMessage(message, fileName);
     }

@@ -3,4 +3,4 @@ export { callExpressionExtractor, ICustomJsExtractorOptions, TTranslatorFunction
 export { FunctionExtractorBuilder, FunctionExtractor } from './js/extractors/functionExtractors';
 export { SvelteParser } from './svelte/parser';
 export { JsParser } from './js/parser';
-export { IFunctionDictData, TFunctionData } from './builder';
+export { IFunctionDictData, TFunctionData, IFunctionDict } from './builder';
