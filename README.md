@@ -259,7 +259,12 @@ and the mapping of identifiers to text as an object
 Create parser for parsing `.svelte` files
 
 ##### Return Value
-*SvelteParser* · Can be used in the same way as parser created with [`createJsParser()`](https://github.com/lukasgeiter/gettext-extractor/wiki/API-Reference#createjsparserextractors)
+*SvelteParser* · Can be used in the same way as parser created with [`createJsParser()`](https://github.com/lukasgeiter/gettext-extractor/wiki/API-Reference#createjsparserextractors), except the following added parse option:
+
+| **Name**              | **Type**                                           | **Details**                                           |
+|-----------------------|----------------------------------------------------|-------------------------------------------------------|
+| `options`             | *object*                                           | Additional parse option                               |
+| `translatorFunctions` | *TTranslatorFunction &vert; TTranslatorFunction[]* | Translation Function Definition to extract functions. |
 
 ### <a id="get-functions"></a>&nbsp;&nbsp;`getFunctions()`
 Gets all parsed function calls

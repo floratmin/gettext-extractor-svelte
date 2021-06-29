@@ -1,6 +1,7 @@
 import { SvelteGettextExtractor, callExpressionExtractor, ICustomJsExtractorOptions, FunctionExtractorBuilder } from '../src';
 import { IMessage } from 'gettext-extractor/dist/builder';
 import { HtmlExtractors } from 'gettext-extractor';
+import { TTranslatorFunction } from '../dist';
 
 function i(strings: TemplateStringsArray): string {
     const stringArray = strings[0].split('\n');
@@ -1537,6 +1538,82 @@ export class Foo {
                     definition: true,
                     startChar: 0,
                     endChar: 38
+                }
+            ]
+        });
+    });
+    test('Extracts imports supplied trough parser', () => {
+        const functionExtractor = new FunctionExtractorBuilder();
+        const findBarFunctionDeclaration = functionExtractor.importDeclaration(
+            'bar-module',
+            functionExtractor.importClause(
+                undefined,
+                [functionExtractor.importSpecifier('bar')]
+            ),
+            true);
+        const findFooFunctionDeclaration = functionExtractor.importDeclaration(
+            'foo-module',
+            functionExtractor.importClause(
+                'Foo',
+                undefined
+            ),
+            true);
+        const options: ICustomJsExtractorOptions = {
+            arguments: {
+                text: 0,
+                context: 1,
+                comments: 2
+            }
+        };
+        const translatorFunctions = <TTranslatorFunction []> [
+            {
+                functionExtractor: findBarFunctionDeclaration,
+                identifier: 'functionIdentifier',
+                functionName: 'bar'
+            },
+            {
+                functionExtractor: findFooFunctionDeclaration,
+                identifier: 'functionIdentifier',
+                functionName: 'Foo'
+            }
+        ];
+        const jsString = i`
+        import { bar } from 'bar-module';
+        import Foo from 'foo-module';
+        `;
+
+        const extractor = new SvelteGettextExtractor();
+        extractor.createJsParser()
+            .addExtractor(callExpressionExtractor('_', options))
+            .parseString(jsString, './src/file.js', {translatorFunctions});
+
+        expect(extractor.getFunctions()).toEqual({
+            'src/file.js': [
+                {
+                    functionString: i`
+                    import { bar } from 'bar-module';
+                    `,
+                    identifier: 'functionIdentifier',
+                    functionData: {
+                        functionName: 'bar',
+                        functionArgs: []
+                    },
+                    definition: true,
+                    startChar: 0,
+                    endChar: 33
+                },
+                {
+                    functionString: i`
+                    import Foo from 'foo-module';
+                    `,
+                    identifier: 'functionIdentifier',
+                    functionData: {
+                        functionName: 'Foo',
+                        functionArgs: []
+                    },
+                    definition: true,
+                    startChar: 34,
+                    endChar: 63
                 }
             ]
         });

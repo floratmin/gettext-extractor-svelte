@@ -146,7 +146,7 @@ export function callExpressionExtractor(calleeName: string | string[], options?:
                     : [translatorFunctionsByFile]
                 : [];
             if ((<ICustomJsExtractorOptions>options).translatorFunction) {
-                translatorFunctions = [...translatorFunctions ,...(Array.isArray((<ICustomJsExtractorOptions>options).translatorFunction)
+                translatorFunctions = [...translatorFunctions, ...(Array.isArray((<ICustomJsExtractorOptions>options).translatorFunction)
                     ? <TTranslatorFunction[]>(<ICustomJsExtractorOptions>options).translatorFunction
                     : [<TTranslatorFunction>(<ICustomJsExtractorOptions>options).translatorFunction])];
             }
