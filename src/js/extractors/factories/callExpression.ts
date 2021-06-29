@@ -32,6 +32,8 @@ export type TTranslatorFunction = {
 
 export type IdentifierKey = 'text' | 'textPlural' | 'context';
 
+export const defaultIdentifierKeys: IdentifierKey[] = ['text', 'context'];
+
 export interface ICustomJsExtractorOptions {
     arguments?: IArgumentIndexMapping;
     comments?: ICommentOptions;
@@ -211,7 +213,7 @@ export function callExpressionExtractor(calleeName: string | string[], options?:
 }
 
 export function getIdentifierKey(message: IMessageData, fileName: string, identifierKeys?: IdentifierKey[]): string {
-    const keys = identifierKeys ? identifierKeys : <('text' | 'textPlural' | 'context')[]>['text', 'context'];
+    const keys = identifierKeys ? identifierKeys : <('text' | 'textPlural' | 'context')[]>defaultIdentifierKeys;
     let failingKeys = [];
     if (keys.length > 1) {
         const identifier: Record<string, string>[] = [];
