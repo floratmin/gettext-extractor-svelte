@@ -3,7 +3,7 @@ import { IMessage } from 'gettext-extractor/dist/builder';
 import { HtmlExtractors } from 'gettext-extractor';
 import { TTranslatorFunction } from '../dist';
 
-function i(strings: TemplateStringsArray): string {
+export function i(strings: TemplateStringsArray): string {
     const stringArray = strings[0].split('\n');
     const indentation = stringArray[1].match(/\s*/g)![0].length;
     return stringArray.slice(1, -1).map((line) => line.slice(indentation)).join('\n');

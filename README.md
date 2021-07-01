@@ -629,6 +629,65 @@ we extract the following messages
 If any argument is not a string or comment object then the parsing is cut off starting from this argument. If there are
 other arguments in between these arguments, their position is not considered in the fallback.
 
+# JS Node Parser for [gettext-extractor](https://github.com/lukasgeiter/gettext-extractor)
+Extracts nodes provided by `TTranslatorFunction` or by providing `TTranslatorFunction[]` on each `.parseString` or `.parseSvelteString` method call.
+
+```ts
+import { nodeExtractor, TTranslatorFunction, FunctionExtractorBuilder, SvelteGettextExtractor } from 'gettext-extractor-svelte';
+
+const functionExtractor = new FunctionExtractorBuilder();
+const importDeclaration = functionExtractor.importDeclaration(
+    './translations',
+    functionExtractor.importClause(
+        't'
+    ),
+    true,
+);
+
+const translatorFunctions: TTranslatorFunction[] = [
+    {
+        identifier: 'translationFunctionImport',
+        functionName: 't',
+        functionExtractor: importDeclaration
+    }
+];
+
+const extractor = new SvelteGettextExtractor();
+
+extractor.createJsParser()
+    .addExtractor(nodeExtractor())
+    .parseString('import t from "./translations";', 'src/app.js', {translatorFunctions});
+
+extractor.getFunctions() === {
+    'src/app.js': [
+        {
+            functionString: 'import t from "./translations";',
+            functionData: {
+                functionName: 't',
+                functionArgs: []
+            },
+            startChar: 0,
+            endChar: 31,
+            identifier: 'translationFunctionImport',
+            definition: true
+        }
+    ]
+}; // true
+```
+
+### `nodeExtractor(translatorFunction)`
+
+#### Parameters
+| Name          | Type   | Details                                                                 |
+|---------------|--------|-------------------------------------------------------------------------|
+| `translatorFunction` | *TTranslatorFunction* or *TTranslatorFunction[]* | See [Translator Function Options](#translator-function-options2) below      |
+
+##### <a id="translator-function-options2"></a>Function Extractor Options
+| Name                  | Type                    | Default   | Details                                                                           |
+|-----------------------|-------------------------|-----------|-----------------------------------------------------------------------------------|
+| `functionExtractor`   | *FunctionExtractor*     |           | The function extractor describing the typescript nodes of the function to extract |
+| `identifier`          | *string*                |           | The identifier under which the function will be added to the dict                 |
+| `restrictToFile`      | *string*                |           | When set than only the specified file will be parsed for the function             |
 # Function Extractor Builder
 
 ```js
