@@ -114,17 +114,20 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
             ...(scriptInHTMLFragments ? scriptInHTMLFragments : [])
         ]
             .forEach((jsFragment) => {
-                this.parseString(
-                    jsFragment.fragment,
-                    fileName,
-                    <TParseOptions>{
-                        ...options,
-                        ...{
-                            lineNumberStart: jsFragment.startLine + (options?.lineNumberStart || 0),
-                            startChar: jsFragment.startChar + (options?.startChar || 0)
+                jsFragment = Array.isArray(jsFragment) ? jsFragment : [jsFragment];
+                jsFragment.forEach((jsFrag) => {
+                    this.parseString(
+                        jsFrag.fragment,
+                        fileName,
+                        <TParseOptions>{
+                            ...options,
+                            ...{
+                                lineNumberStart: jsFrag.startLine + (options?.lineNumberStart || 0),
+                                startChar: jsFrag.startChar + (options?.startChar || 0)
+                            }
                         }
-                    }
-                );
+                    );
+                });
             });
         return this;
     }
