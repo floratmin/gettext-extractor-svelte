@@ -20,11 +20,14 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint',
+    'prettier',
   ],
   extends: [
+    'prettier',
     'airbnb-typescript',
   ],
   rules: {
+    'prettier/prettier': 2,
     'no-nested-ternary': 'off',
     'max-len': [1, 160],
     '@typescript-eslint/object-curly-spacing': 'off',

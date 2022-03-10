@@ -16,7 +16,7 @@ export interface IFunction {
 }
 
 export interface IParsed {
-  messages:  IMessage[];
+  messages: IMessage[];
   functionsData: IFunction[];
 }
 
@@ -34,8 +34,8 @@ export interface IContext {
   messages: IMessage[];
 }
 
-export type IMessageMap = {[text: string]: IMessage};
-export type IContextMap = {[context: string]: IMessageMap};
+export type IMessageMap = { [text: string]: IMessage };
+export type IContextMap = { [context: string]: IMessageMap };
 export type IFunctionDictData = Pick<IFunction, 'functionString' | 'functionData' | 'startChar' | 'endChar' | 'identifier' | 'definition'>;
 export type IFunctionDict = Record<string, IFunctionDictData[]>;
 
