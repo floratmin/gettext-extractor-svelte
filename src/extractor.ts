@@ -19,22 +19,20 @@ export interface IGettextExtractorStats {
 }
 
 interface IHeaders {
-    'Project-Id-Version': string;
-    'Report-Msgid-Bugs-To': string;
-    'POT-Creation-Date': string;
-    'PO-Revision-Date': string;
-    'Last-Translator': string;
-    'Language': string;
-    'Language-Team': string;
-    'Content-Type': string;
-    'Content-Transfer-Encoding': string;
-    'Plural-Forms': string;
-    [name: string]: string;
+  'Project-Id-Version': string;
+  'Report-Msgid-Bugs-To': string;
+  'POT-Creation-Date': string;
+  'PO-Revision-Date': string;
+  'Last-Translator': string;
+  Language: string;
+  'Language-Team': string;
+  'Content-Type': string;
+  'Content-Transfer-Encoding': string;
+  'Plural-Forms': string;
+  [name: string]: string;
 }
 
-
 export class SvelteGettextExtractor {
-
   private stats: IGettextExtractorStats = {
     numberOfMessages: 0,
     numberOfPluralMessages: 0,
@@ -54,18 +52,18 @@ export class SvelteGettextExtractor {
   }
 
   public createJsParser(extractors?: IJsExtractorFunction[]): JsParser {
-    Validate.optional.nonEmptyArray({extractors});
+    Validate.optional.nonEmptyArray({ extractors });
 
     return new JsParser(this.builder, this.functionBuilder, extractors, this.stats);
   }
 
   public createHtmlParser(extractors?: IHtmlExtractorFunction[]): HtmlParser {
-    Validate.optional.nonEmptyArray({extractors});
+    Validate.optional.nonEmptyArray({ extractors });
     return new HtmlParser(this.builder, this.functionBuilder, extractors, this.stats);
   }
 
   public createSvelteParser(extractors?: IJsExtractorFunction[]): SvelteParser {
-    Validate.optional.nonEmptyArray({extractors});
+    Validate.optional.nonEmptyArray({ extractors });
     return new SvelteParser(this.builder, this.functionBuilder, extractors, this.stats);
   }
 
@@ -133,7 +131,7 @@ export class SvelteGettextExtractor {
   }
 
   public getPotString(headers: Partial<IHeaders> = {}): string {
-    Validate.optional.object({headers});
+    Validate.optional.object({ headers });
 
     let po = new (<any>pofile)();
     po.items = this.getPofileItems();
@@ -145,15 +143,15 @@ export class SvelteGettextExtractor {
   }
 
   public savePotFile(fileName: string, headers?: Partial<IHeaders>): void {
-    Validate.required.nonEmptyString({fileName});
-    Validate.optional.object({headers});
+    Validate.required.nonEmptyString({ fileName });
+    Validate.optional.object({ headers });
 
     fs.writeFileSync(fileName, this.getPotString(headers));
   }
 
   public savePotFileAsync(fileName: string, headers?: Partial<IHeaders>): Promise<any> {
-    Validate.required.nonEmptyString({fileName});
-    Validate.optional.object({headers});
+    Validate.required.nonEmptyString({ fileName });
+    Validate.optional.object({ headers });
 
     return new Promise((resolve, reject) => {
       fs.writeFile(fileName, this.getPotString(headers), (error) => {
@@ -167,12 +165,12 @@ export class SvelteGettextExtractor {
   }
 
   public saveFunctionJSON(fileName: string): void {
-    Validate.required.nonEmptyString({fileName});
+    Validate.required.nonEmptyString({ fileName });
     fs.writeFileSync(fileName, JSON.stringify(this.getFunctions()));
   }
 
   public saveFunctionJSONAsync(fileName: string): Promise<any> {
-    Validate.required.nonEmptyString({fileName});
+    Validate.required.nonEmptyString({ fileName });
 
     return new Promise((resolve, reject) => {
       fs.writeFile(fileName, JSON.stringify(this.getFunctions()), (error) => {
@@ -194,7 +192,7 @@ export class SvelteGettextExtractor {
   }
 
   private getPofileItems() {
-    return this.getMessages().map(message => {
+    return this.getMessages().map((message) => {
       let item = new pofile.Item();
 
       item.msgid = message.text as string;

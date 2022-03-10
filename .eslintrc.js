@@ -40,5 +40,7 @@ module.exports = {
     'no-unused-expressions': 'off',
     '@typescript-eslint/no-unused-expressions': 'off',
     '@typescript-eslint/quotes': ['error', 'single', { allowTemplateLiterals: true }],
+    '@typescript-eslint/indent': 'off',
+    '@typescript-eslint/keyword-spacing': 'off',
   },
 };

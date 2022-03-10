@@ -14,6 +14,7 @@
     "build": "tsc -p src/",
     "lint": "eslint src/",
     "lint:test": "eslint tests/",
+    "prettier:format": "prettier --config .prettierrc.js 'src/**/*.ts' --write",
     "test": "jest --config jest.json"
   },
   "repository": {

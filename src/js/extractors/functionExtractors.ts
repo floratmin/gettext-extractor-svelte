@@ -1,12 +1,12 @@
 import * as ts from 'typescript';
 
 export type TextNode = {
-  kind: ts.SyntaxKind.Identifier,
+  kind: ts.SyntaxKind.Identifier;
   text: string;
 };
 
 export type ModuleSpecifierNode = {
-  kind: ts.SyntaxKind.StringLiteral,
+  kind: ts.SyntaxKind.StringLiteral;
   text: string;
 };
 
@@ -20,7 +20,7 @@ export type FunctionExtractor = {
   declarationList?: FunctionExtractor;
   declarations?: FunctionExtractor[];
   moduleSpecifier?: ModuleSpecifierNode;
-  properties?: FunctionExtractor [];
+  properties?: FunctionExtractor[];
   members?: FunctionExtractor[];
   getPos?: boolean;
   text?: string;
@@ -32,14 +32,12 @@ export type FunctionExtractor = {
   };
 };
 
-
 export class FunctionExtractorBuilder {
-
   public objectLiteralExpression(properties?: FunctionExtractor[], getPos: boolean = false): FunctionExtractor {
     return {
       kind: ts.SyntaxKind.ObjectLiteralExpression,
-      ...(properties ? {properties} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(properties ? { properties } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -47,8 +45,8 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.VariableDeclaration,
       ...this.getName(variableName),
-      ...(initializer ? {initializer} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(initializer ? { initializer } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -56,8 +54,8 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.PropertyAssignment,
       ...this.getName(keyName),
-      ...(initializer ? {initializer} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(initializer ? { initializer } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -65,14 +63,14 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.MethodDeclaration,
       ...this.getName(methodName),
-      ...(getPos ? {getPos} : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
   public arrowFunction(getPos: boolean = false): FunctionExtractor {
     return {
       kind: ts.SyntaxKind.ArrowFunction,
-      ...(getPos ? {getPos} : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -80,7 +78,7 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.FunctionExpression,
       ...(functionName ? this.getName(functionName) : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -88,8 +86,8 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.PropertyDeclaration,
       ...this.getName(propertyName),
-      ...(initializer ? {initializer} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(initializer ? { initializer } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -97,7 +95,7 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.FunctionDeclaration,
       ...this.getName(functionName),
-      ...(getPos ? {getPos} : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -105,8 +103,8 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.ClassDeclaration,
       ...this.getName(className),
-      ...(members ? {members} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(members ? { members } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -114,8 +112,8 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.ClassExpression,
       ...(className ? this.getName(className) : {}),
-      ...(members ? {members} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(members ? { members } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -123,8 +121,8 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.GetAccessor,
       ...this.getName(accessorName),
-      ...(body ? {body} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(body ? { body } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -132,8 +130,8 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.SetAccessor,
       ...this.getName(accessorName),
-      ...(body ? {body} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(body ? { body } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -146,17 +144,17 @@ export class FunctionExtractorBuilder {
           kind: ts.SyntaxKind.Identifier,
           text: identifier,
         },
-        ...(right ? {right} : {}),
+        ...(right ? { right } : {}),
       },
-      ...(getPos ? {getPos} : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
   public labeledStatement(statement?: FunctionExtractor, getPos: boolean = false): FunctionExtractor {
     return {
       kind: ts.SyntaxKind.LabeledStatement,
-      ...(statement ? {statement} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(statement ? { statement } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -167,8 +165,8 @@ export class FunctionExtractorBuilder {
         kind: ts.SyntaxKind.StringLiteral,
         text: moduleSpecifier,
       },
-      ...(importClause ? {importClause} : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(importClause ? { importClause } : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -176,13 +174,15 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.ImportClause,
       ...(name ? this.getName(name) : {}),
-      ...(elements ? {
-        namedBindings: {
-          kind: ts.SyntaxKind.NamedImports,
-          elements,
-        },
-      } : {}),
-      ...(getPos ? {getPos} : {}),
+      ...(elements
+        ? {
+            namedBindings: {
+              kind: ts.SyntaxKind.NamedImports,
+              elements,
+            },
+          }
+        : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -190,7 +190,7 @@ export class FunctionExtractorBuilder {
     return {
       kind: ts.SyntaxKind.ImportSpecifier,
       ...this.getName(name),
-      ...(getPos ? {getPos} : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -201,7 +201,7 @@ export class FunctionExtractorBuilder {
         kind: ts.SyntaxKind.VariableDeclarationList,
         declarations,
       },
-      ...(getPos ? {getPos} : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
@@ -212,11 +212,11 @@ export class FunctionExtractorBuilder {
         kind: ts.SyntaxKind.Identifier,
         text: expression,
       },
-      ...(getPos ? {getPos} : {}),
+      ...(getPos ? { getPos } : {}),
     };
   }
 
-  private getName(text: string): {name: TextNode} {
+  private getName(text: string): { name: TextNode } {
     return {
       name: {
         kind: ts.SyntaxKind.Identifier,

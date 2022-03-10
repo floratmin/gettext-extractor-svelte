@@ -36,7 +36,6 @@ export interface IMessageData {
 
 export type IAddFunctionCallBack = (data: IFunctionData) => void;
 
-
 export interface IParseOptions {
   lineNumberStart?: number;
   transformSource?: (source: string) => string;
@@ -45,7 +44,6 @@ export interface IParseOptions {
 }
 
 export abstract class Parser<TExtractorFunction extends Function, TParseOptions extends IParseOptions> {
-
   public static STRING_LITERAL_FILENAME: string = 'gettext-extractor-string-literal';
 
   public abstract parser: string;
@@ -78,7 +76,9 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
   }
 
   public static createAddFunctionCallback(
-    functionsData: IFunction[], fileName: string, getFirstAndLastChar: () => Pick<IFunction, 'functionString' | 'startChar' | 'endChar'>,
+    functionsData: IFunction[],
+    fileName: string,
+    getFirstAndLastChar: () => Pick<IFunction, 'functionString' | 'startChar' | 'endChar'>,
   ): IAddFunctionCallBack {
     return (data: IFunctionData) => {
       if (typeof data.startChar !== 'number' || typeof data.endChar !== 'number') {
@@ -89,12 +89,12 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
 
       const functionData: IFunction = {
         functionString: data.functionString || '',
-        ...(data.functionData ? {functionData: data.functionData } : {}),
+        ...(data.functionData ? { functionData: data.functionData } : {}),
         fileName: data.fileName,
         startChar: <number>data.startChar,
         endChar: <number>data.endChar,
         identifier: <string>data.identifier,
-        ...(data.definition ? {definition: data.definition} : {}),
+        ...(data.definition ? { definition: data.definition } : {}),
       };
 
       functionsData.push(functionData);
@@ -112,32 +112,24 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
 
   public parseSvelteString(source: string, fileName?: string, options?: TParseOptions): this {
     const { scriptInHTMLFragments, script } = svelteFragmentDivider(source, <string>fileName);
-    [
-      ...(script ? [script] : []),
-      ...(scriptInHTMLFragments ? scriptInHTMLFragments : []),
-    ]
-      .forEach((jsFragment) => {
-        jsFragment = Array.isArray(jsFragment) ? jsFragment : [jsFragment];
-        jsFragment.forEach((jsFrag) => {
-          this.parseString(
-            jsFrag.fragment,
-            fileName,
-            <TParseOptions>{
-              ...options,
-              ...{
-                lineNumberStart: jsFrag.startLine + (options?.lineNumberStart || 0),
-                startChar: jsFrag.startChar + (options?.startChar || 0),
-              },
-            },
-          );
+    [...(script ? [script] : []), ...(scriptInHTMLFragments ? scriptInHTMLFragments : [])].forEach((jsFragment) => {
+      jsFragment = Array.isArray(jsFragment) ? jsFragment : [jsFragment];
+      jsFragment.forEach((jsFrag) => {
+        this.parseString(jsFrag.fragment, fileName, <TParseOptions>{
+          ...options,
+          ...{
+            lineNumberStart: jsFrag.startLine + (options?.lineNumberStart || 0),
+            startChar: jsFrag.startChar + (options?.startChar || 0),
+          },
         });
       });
+    });
     return this;
   }
 
   public parseString(source: string, fileName?: string, options?: TParseOptions): this {
-    Validate.required.string({source});
-    Validate.optional.nonEmptyString({fileName});
+    Validate.required.string({ source });
+    Validate.optional.nonEmptyString({ fileName });
     fileName = fileName || Parser.STRING_LITERAL_FILENAME;
     this.validateParseOptions(options);
 
@@ -149,7 +141,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
       source = options.transformSource(source);
     }
 
-    let { messages, functionsData} = this.parse(source, fileName, options);
+    let { messages, functionsData } = this.parse(source, fileName, options);
 
     for (let message of messages) {
       this.builder.addMessage(message, fileName);
@@ -168,7 +160,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
   }
 
   public parseFile(fileName: string, options?: TParseOptions): this {
-    Validate.required.nonEmptyString({fileName});
+    Validate.required.nonEmptyString({ fileName });
     this.validateParseOptions(options);
     if (this.parser === 'SvelteParser') {
       this.parseSvelteString(fs.readFileSync(fileName).toString(), fileName, options);
@@ -180,8 +172,8 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
   }
 
   public parseFilesGlob(pattern: string, globOptions?: glob.IOptions, options?: TParseOptions): this {
-    Validate.required.nonEmptyString({pattern});
-    Validate.optional.object({globOptions});
+    Validate.required.nonEmptyString({ pattern });
+    Validate.optional.object({ globOptions });
     this.validateParseOptions(options);
 
     for (let fileName of glob.sync(pattern, <glob.IOptions>globOptions)) {
@@ -192,7 +184,7 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
   }
 
   public addExtractor(extractor: TExtractorFunction): this {
-    Validate.required.argument({extractor});
+    Validate.required.argument({ extractor });
     this.validateExtractors(extractor);
 
     this.extractors.push(extractor);
@@ -214,7 +206,6 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
     }
   }
 
-
   protected abstract parse(source: string, fileName: string, options?: TParseOptions): IParsed;
 
   protected abstract parseNode(
@@ -225,5 +216,4 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
     source?: string,
     translatorFunctions?: TTranslatorFunction[],
   ): IParsed;
-
 }

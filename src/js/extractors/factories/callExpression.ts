@@ -46,7 +46,7 @@ export interface ICustomJsExtractorOptions {
 interface IArgumentExpressions {
   text: ts.LiteralExpression | undefined;
   textPlural: ts.LiteralExpression | undefined;
-  context: ts.LiteralExpression | undefined ;
+  context: ts.LiteralExpression | undefined;
   comments: ts.ObjectLiteralExpression | undefined;
 }
 
@@ -66,7 +66,7 @@ type CommentsObject = {
 };
 
 export function callExpressionExtractor(calleeName: string | string[], options?: ICustomJsExtractorOptions): IJsExtractorFunction {
-  Validate.required.argument({calleeName});
+  Validate.required.argument({ calleeName });
   let calleeNames = ([] as string[]).concat(calleeName);
 
   for (let name of calleeNames) {
@@ -142,22 +142,15 @@ export function callExpressionExtractor(calleeName: string | string[], options?:
     if (node.kind === ts.SyntaxKind.CallExpression) {
       let callExpression = <ts.CallExpression>node;
 
-      let matches = calleeNames.reduce((matchFound, name) => (
-        matchFound || JsUtils.calleeNameMatchesCallExpression(name, callExpression)
-      ), false);
+      let matches = calleeNames.reduce((matchFound, name) => matchFound || JsUtils.calleeNameMatchesCallExpression(name, callExpression), false);
 
       if (matches) {
-        let message = extractArguments(
-          callExpression,
-          <IArgumentIndexMapping>(<ICustomJsExtractorOptions>options).arguments,
-          contentOptions,
-          commentOptions,
-        );
+        let message = extractArguments(callExpression, <IArgumentIndexMapping>(<ICustomJsExtractorOptions>options).arguments, contentOptions, commentOptions);
         if (message) {
           const identifierKey = getIdentifierKey(message, sourceFile.fileName, (<ICustomJsExtractorOptions>options).identifierKeys);
           message.identifier = identifierKey;
           if (addFunction && source) {
-            addFunction(getData(callExpression, source, startChar, identifierKey, <Pos []>message.pos));
+            addFunction(getData(callExpression, source, startChar, identifierKey, <Pos[]>message.pos));
           }
           delete message.pos;
           // todo: remove any
@@ -173,15 +166,13 @@ export function getIdentifierKey(message: IMessageData, fileName: string, identi
   let failingKeys = [];
   if (keys.length > 1) {
     const identifier: Record<string, string>[] = [];
-    keys.forEach(key => {
-      identifier.push({[key]: <string>message[key]});
+    keys.forEach((key) => {
+      identifier.push({ [key]: <string>message[key] });
     });
-    if (identifier.filter(e => Object.values(e)[0] !== undefined).length > 0) {
-      return JSON.stringify(identifier
-        .reduce((dict, entry) => Object.values(entry)[0] !== undefined ? Object.assign(dict, entry) : dict, {}),
-      );
+    if (identifier.filter((e) => Object.values(e)[0] !== undefined).length > 0) {
+      return JSON.stringify(identifier.reduce((dict, entry) => (Object.values(entry)[0] !== undefined ? Object.assign(dict, entry) : dict), {}));
     }
-    failingKeys = identifier.filter(e => Object.values(e)[0] === undefined).map(e => Object.keys(e)[0]);
+    failingKeys = identifier.filter((e) => Object.values(e)[0] === undefined).map((e) => Object.keys(e)[0]);
   } else {
     const identifier = message[keys[0]];
     if (identifier !== undefined) {
@@ -189,9 +180,11 @@ export function getIdentifierKey(message: IMessageData, fileName: string, identi
     }
     failingKeys.push(keys[0]);
   }
-  throw new Error(`Identifier from key(s) ${JSON.stringify(failingKeys)} for message ${JSON.stringify(message)} in file ${
-    fileName
-  } could not be generated. Make sure that at least one key exists on every message.`);
+  throw new Error(
+    `Identifier from key(s) ${JSON.stringify(failingKeys)} for message ${JSON.stringify(
+      message,
+    )} in file ${fileName} could not be generated. Make sure that at least one key exists on every message.`,
+  );
 }
 
 function removeJsCommentsStart(functionString: string): string {
@@ -208,16 +201,18 @@ function getData(node: ts.Node, source: string, startChar: number, messageIdenti
   let functionString = source.slice(node.pos, node.end);
   const diff = getDiff(functionString);
   let length = 0;
-  messagePos.sort((a, b) => b.pos - a.pos).forEach(({pos, end}) => {
-    let functionEnd = functionString.slice(end - node.end + length);
-    length = length + end - pos;
-    const propertyDelimiter = functionEnd.match(/^\s*,\s*/);
-    if (propertyDelimiter) {
-      length += propertyDelimiter[0].length;
-      functionEnd = functionEnd.slice(propertyDelimiter[0].length);
-    }
-    functionString = functionString.slice(0, pos - node.pos) + functionEnd;
-  });
+  messagePos
+    .sort((a, b) => b.pos - a.pos)
+    .forEach(({ pos, end }) => {
+      let functionEnd = functionString.slice(end - node.end + length);
+      length = length + end - pos;
+      const propertyDelimiter = functionEnd.match(/^\s*,\s*/);
+      if (propertyDelimiter) {
+        length += propertyDelimiter[0].length;
+        functionEnd = functionEnd.slice(propertyDelimiter[0].length);
+      }
+      functionString = functionString.slice(0, pos - node.pos) + functionEnd;
+    });
   return {
     startChar: startChar + node.pos + diff,
     endChar: startChar + node.end,
@@ -229,11 +224,11 @@ function getData(node: ts.Node, source: string, startChar: number, messageIdenti
 
 function getFunctionData(functionString: string): TFunctionData {
   const sourceFile = ts.createSourceFile('', functionString, ts.ScriptTarget.Latest, true);
-  const expressionStatement = (<ts.CallExpression>(<ts.ExpressionStatement>sourceFile.statements[0]).expression);
+  const expressionStatement = <ts.CallExpression>(<ts.ExpressionStatement>sourceFile.statements[0]).expression;
   const args = expressionStatement.arguments;
   return {
     functionName: (<ts.Identifier>expressionStatement.expression).text,
-    functionArgs: args.map(arg => functionString.slice(arg.pos, arg.end)),
+    functionArgs: args.map((arg) => functionString.slice(arg.pos, arg.end)),
   };
 }
 
@@ -271,7 +266,7 @@ function getArgumentExpressionsArray(
   argTypes: ArgTypes,
   fallback: boolean,
 ): IArgumentExpressions {
-  let argumentExpressions: IArgumentExpressions = {text: undefined, textPlural: undefined, context: undefined, comments: undefined};
+  let argumentExpressions: IArgumentExpressions = { text: undefined, textPlural: undefined, context: undefined, comments: undefined };
 
   for (let i = 0; i < argTypes.length; i++) {
     if (typeFunctionArray[i](argumentArray[i])) {
@@ -280,14 +275,14 @@ function getArgumentExpressionsArray(
     } else if (fallback) {
       const fallbackArgTypes = getFallback(argTypes.slice(i));
       if (fallbackArgTypes) {
-        argumentExpressions = {...argumentExpressions, ...Object.fromEntries(Object.entries(
-          getArgumentExpressionsArray(
-            typeFunctionArray.slice(i + 1),
-            argumentArray.slice(i),
-            args.slice(i + 1),
-            fallbackArgTypes,
-            fallback,
-          )).filter(([_, value]) => value))};
+        argumentExpressions = {
+          ...argumentExpressions,
+          ...Object.fromEntries(
+            Object.entries(
+              getArgumentExpressionsArray(typeFunctionArray.slice(i + 1), argumentArray.slice(i), args.slice(i + 1), fallbackArgTypes, fallback),
+            ).filter(([_, value]) => value),
+          ),
+        };
         return argumentExpressions;
       }
       break;
@@ -306,9 +301,9 @@ function getArgumentExpressions(
 ): IArgumentExpressions {
   const indices = <Indices>Object.entries(argumentMapping).sort((a, b) => a[1] - b[1]);
   const args = indices.map(([arg, _]) => arg);
-  const argTypes = args.map(arg => arg === 'text' ? 'required' : arg === 'comments' ? 'comment' : 'string');
+  const argTypes = args.map((arg) => (arg === 'text' ? 'required' : arg === 'comments' ? 'comment' : 'string'));
   const positions = indices.map(([_, position]) => position);
-  const argumentArray:  ts.Expression[] = [];
+  const argumentArray: ts.Expression[] = [];
   const typeFunctionArray: TypeFunctionArray = [];
   const fallback = commentOptions !== undefined && commentOptions.fallback === true;
 
@@ -317,14 +312,14 @@ function getArgumentExpressions(
       ? isNullOrObjectLiteralExpression
       : isNullOrObjectLiteralOrTextLiteral
     : isNullOrTextLiteral;
-  positions.forEach(position => {
+  positions.forEach((position) => {
     argumentArray.push(checkAndConcatenateStrings(callArguments[position]));
     typeFunctionArray.push(
       argumentMapping.comments === position
-        ?  isNullOrObjectLiteralOrLiteralExpression
+        ? isNullOrObjectLiteralOrLiteralExpression
         : argumentMapping.text === position
-          ? isTextLiteral
-          : isNullOrTextLiteral,
+        ? isTextLiteral
+        : isNullOrTextLiteral,
     );
   });
 
@@ -344,30 +339,30 @@ function extractArguments(
   if (argumentExpressions.text) {
     let message: IMessageData = {
       text: normalizeContent(argumentExpressions.text.text, contentOptions),
-      pos: [{pos: argumentExpressions.text.pos, end: argumentExpressions.text.end}],
+      pos: [{ pos: argumentExpressions.text.pos, end: argumentExpressions.text.end }],
     };
     if (argumentExpressions.textPlural) {
       if (!isNullOrUndefined(argumentExpressions.textPlural)) {
         message.textPlural = normalizeContent(argumentExpressions.textPlural.text, contentOptions);
       }
-      message.pos?.push({pos: argumentExpressions.textPlural.pos, end: argumentExpressions.textPlural.end});
+      message.pos?.push({ pos: argumentExpressions.textPlural.pos, end: argumentExpressions.textPlural.end });
     }
     if (argumentExpressions.context) {
       if (!isNullOrUndefined(argumentExpressions.context)) {
         message.context = normalizeContent(argumentExpressions.context.text, contentOptions);
       }
-      message.pos?.push({pos: argumentExpressions.context.pos, end: argumentExpressions.context.end});
+      message.pos?.push({ pos: argumentExpressions.context.pos, end: argumentExpressions.context.end });
     }
     if (commentsExpression && commentOptions && isObjectLiteralExpression(commentsExpression)) {
-      const commentsObject = <CommentsObject>{comment: [], propComments: [], keyedComments: [], otherComments: []};
+      const commentsObject = <CommentsObject>{ comment: [], propComments: [], keyedComments: [], otherComments: [] };
       getComments(commentsExpression, undefined, commentOptions, commentsObject, message);
       message.comments = [...commentsObject.comment, ...commentsObject.otherComments, ...commentsObject.propComments, ...commentsObject.keyedComments];
-      message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
-    } else if (commentsExpression && (isTextLiteral(commentsExpression))) {
+      message.pos?.push({ pos: commentsExpression.pos, end: commentsExpression.end });
+    } else if (commentsExpression && isTextLiteral(commentsExpression)) {
       message.comments = [...normalizeContent(commentsExpression.text, contentOptions).split('\n')];
-      message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
+      message.pos?.push({ pos: commentsExpression.pos, end: commentsExpression.end });
     } else if (commentsExpression && isNullOrUndefined(commentsExpression)) {
-      message.pos?.push({pos: commentsExpression.pos, end: commentsExpression.end});
+      message.pos?.push({ pos: commentsExpression.pos, end: commentsExpression.end });
     }
     return message;
   }
@@ -384,7 +379,6 @@ function getComments(
   isProp: boolean = false,
   propsKeys?: string[],
 ): void {
-
   if (!propsKeys) {
     propsKeys = commentOptions.props ? Object.keys(commentOptions.props) : [];
   }
@@ -395,9 +389,9 @@ function getComments(
 
   const properties = objectLiteralExpression.properties;
 
-  properties.forEach(property => {
+  properties.forEach((property) => {
     if (property.kind === ts.SyntaxKind.PropertyAssignment) {
-      const key = (<string>(<ts.Identifier>(<ts.PropertyAssignment>property).name).escapedText);
+      const key = <string>(<ts.Identifier>(<ts.PropertyAssignment>property).name).escapedText;
       const value = checkAndConcatenateStrings((<ts.PropertyAssignment>property).initializer);
       const nextKey = prevKey !== undefined ? `${prevKey}.${key}` : key;
 
@@ -407,14 +401,14 @@ function getComments(
           comments.comment.push(...commentsArray);
         } else if (isProp && prevKey && prevKey !== 'comment') {
           const braces = commentOptions.props![prevKey];
-          comments.propComments.push(...commentsArray.map(line => `${braces[0]}${key}${braces[1]}: ${line}`));
+          comments.propComments.push(...commentsArray.map((line) => `${braces[0]}${key}${braces[1]}: ${line}`));
         } else if (prevKey) {
-          comments.keyedComments.push(...commentsArray.map(line => `${nextKey}: ${line}`));
+          comments.keyedComments.push(...commentsArray.map((line) => `${nextKey}: ${line}`));
         } else {
-          comments.otherComments.push(...commentsArray.map(line => `${nextKey}: ${line}`));
+          comments.otherComments.push(...commentsArray.map((line) => `${nextKey}: ${line}`));
         }
       } else if (isObjectLiteralExpression(value)) {
-        if (!prevKey && (<string []>propsKeys).includes(key)) {
+        if (!prevKey && (<string[]>propsKeys).includes(key)) {
           getComments(value, key, commentOptions, comments, message, true, propsKeys);
         } else {
           getComments(value, nextKey, commentOptions, comments, message, false, propsKeys);
@@ -513,7 +507,7 @@ function processStringAddition(expression: ts.BinaryExpression, concatenated: ts
 
   if (isTextLiteral(expression.left)) {
     concatenated.text += expression.left.text;
-  } else if (addition = getAdditionExpression(expression.left)) {
+  } else if ((addition = getAdditionExpression(expression.left))) {
     if (!processStringAddition(addition, concatenated)) {
       return false;
     }
@@ -524,7 +518,7 @@ function processStringAddition(expression: ts.BinaryExpression, concatenated: ts
   if (isTextLiteral(expression.right)) {
     concatenated.text += expression.right.text;
     return true;
-  } else if (addition = getAdditionExpression(expression.right)) {
+  } else if ((addition = getAdditionExpression(expression.right))) {
     return processStringAddition(addition, concatenated);
   } else {
     return false;

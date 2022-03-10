@@ -40,7 +40,6 @@ export type IFunctionDictData = Pick<IFunction, 'functionString' | 'functionData
 export type IFunctionDict = Record<string, IFunctionDictData[]>;
 
 export class FunctionBuilder {
-
   private context: IFunctionDict = {};
 
   private lastFileName: string | undefined;
@@ -54,7 +53,7 @@ export class FunctionBuilder {
       startChar: functionData.startChar,
       endChar: functionData.endChar,
       identifier: functionData.identifier,
-      ...(functionData.definition ? {definition: true} : {}),
+      ...(functionData.definition ? { definition: true } : {}),
     };
     if (this.context[functionData.fileName]) {
       this.context[functionData.fileName].push(functionDictData);
@@ -84,10 +83,7 @@ export class FunctionBuilder {
   }
 }
 
-
-
 export class CatalogBuilder {
-
   private contexts: IContextMap = {};
 
   private lastFileName: string | undefined;
@@ -109,7 +105,6 @@ export class CatalogBuilder {
   }
 
   private static extendMessage(message: IMessage, data: Partial<IMessage>): IMessage {
-
     message.text = typeof data.text === 'string' ? data.text : message.text;
     message.textPlural = typeof data.textPlural === 'string' ? data.textPlural : message.textPlural;
     message.context = typeof data.context === 'string' ? data.context : message.context;
@@ -120,14 +115,17 @@ export class CatalogBuilder {
   }
 
   private static normalizeMessage(message: Partial<IMessage>): IMessage {
-    return CatalogBuilder.extendMessage({
-      text: null,
-      textPlural: null,
-      context: null,
-      references: [],
-      comments: [],
-      identifier: null,
-    }, message);
+    return CatalogBuilder.extendMessage(
+      {
+        text: null,
+        textPlural: null,
+        context: null,
+        references: [],
+        comments: [],
+        identifier: null,
+      },
+      message,
+    );
   }
 
   constructor(private stats?: IGettextExtractorStats) {}
@@ -171,7 +169,7 @@ export class CatalogBuilder {
   }
 
   public getMessages(): IMessage[] {
-    return <IMessage []> this.getMessagesWithId().map(message => Object.fromEntries(Object.entries(message).filter(([key, _]) => key !== 'identifier')));
+    return <IMessage[]>this.getMessagesWithId().map((message) => Object.fromEntries(Object.entries(message).filter(([key, _]) => key !== 'identifier')));
   }
 
   public getLastAddedMessages(): IMessage[] {
@@ -179,10 +177,13 @@ export class CatalogBuilder {
   }
 
   public getMessageDictionary(): Record<string, string> {
-    return Object.fromEntries(this.getMessagesWithId()
-      .map(message => Object.entries(message)
-        .filter(([key, _]) => ['text', 'identifier'].includes(key))
-        .map(([_, value]) => value).sort((a, b) => a === 'text' ? 1 : -1)),
+    return Object.fromEntries(
+      this.getMessagesWithId().map((message) =>
+        Object.entries(message)
+          .filter(([key, _]) => ['text', 'identifier'].includes(key))
+          .map(([_, value]) => value)
+          .sort((a, b) => (a === 'text' ? 1 : -1)),
+      ),
     );
   }
 
@@ -206,7 +207,9 @@ export class CatalogBuilder {
     if (!messages) {
       return [];
     }
-    return Object.keys(messages).sort(CatalogBuilder.compareStrings).map(text => messages[text]);
+    return Object.keys(messages)
+      .sort(CatalogBuilder.compareStrings)
+      .map((text) => messages[text]);
   }
 
   private getOrCreateContext(context: string): IMessageMap {

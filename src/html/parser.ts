@@ -12,13 +12,16 @@ export type TextNode = parse5.DefaultTreeTextNode;
 export type Element = parse5.DefaultTreeElement;
 
 export type IHtmlExtractorFunction = (
-  node: Node, fileName: string, addMessage: IAddMessageCallback, addFunction?: IAddFunctionCallBack, startChar?: number, source?: string
+  node: Node,
+  fileName: string,
+  addMessage: IAddMessageCallback,
+  addFunction?: IAddFunctionCallBack,
+  startChar?: number,
+  source?: string,
 ) => void;
 
 export class HtmlParser extends Parser<IHtmlExtractorFunction, IParseOptions> {
-
   public parser: string;
-
 
   constructor(
     protected builder: CatalogBuilder,
@@ -32,7 +35,7 @@ export class HtmlParser extends Parser<IHtmlExtractorFunction, IParseOptions> {
   }
 
   protected parse(source: string, fileName: string, options: IParseOptions = {}): IParsed {
-    let document = parse5.parse(source, {sourceCodeLocationInfo: true});
+    let document = parse5.parse(source, { sourceCodeLocationInfo: true });
     return this.parseNode(document, fileName, options.lineNumberStart || 1);
   }
 
@@ -56,7 +59,7 @@ export class HtmlParser extends Parser<IHtmlExtractorFunction, IParseOptions> {
       }
     }
 
-    return {messages, functionsData: <IFunction []>[]};
+    return { messages, functionsData: <IFunction[]>[] };
   }
 
   public parseSvelteString(source: string, fileName?: string, options?: IJsParseOptions): this {

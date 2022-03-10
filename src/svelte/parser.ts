@@ -8,7 +8,6 @@ import { IJsExtractorFunction, IJsParseOptions } from '../js/parser';
 import { TTranslatorFunction } from '../js/extractors/factories/callExpression';
 
 export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> {
-
   public parser: string;
 
   constructor(
@@ -24,18 +23,16 @@ export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> 
 
   protected parse(source: string, fileName: string, options: IJsParseOptions = {}): IParsed {
     let sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true, <ts.ScriptKind>options.scriptKind);
-    return this.parseNode(
-      sourceFile,
-      sourceFile,
-      options.lineNumberStart || 1,
-      options.startChar || 0,
-      source,
-      options.translatorFunctions,
-    );
+    return this.parseNode(sourceFile, sourceFile, options.lineNumberStart || 1, options.startChar || 0, source, options.translatorFunctions);
   }
 
   protected parseNode(
-    node: ts.Node, sourceFile: ts.SourceFile, lineNumberStart: number, startChar: number, source: string, translatorFunctions?: TTranslatorFunction[],
+    node: ts.Node,
+    sourceFile: ts.SourceFile,
+    lineNumberStart: number,
+    startChar: number,
+    source: string,
+    translatorFunctions?: TTranslatorFunction[],
   ): IParsed {
     let parsed: IParsed = {
       messages: [],
@@ -59,8 +56,8 @@ export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> 
       extractor(node, sourceFile, addMessageCallback, addFunctionCallback, startChar, source, translatorFunctions);
     }
 
-    ts.forEachChild(node, n => {
-      const {messages, functionsData } = this.parseNode(n, sourceFile, lineNumberStart, startChar, source, translatorFunctions);
+    ts.forEachChild(node, (n) => {
+      const { messages, functionsData } = this.parseNode(n, sourceFile, lineNumberStart, startChar, source, translatorFunctions);
       parsed.messages = parsed.messages.concat(messages);
       parsed.functionsData = parsed.functionsData.concat(functionsData);
     });
@@ -92,5 +89,4 @@ export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> 
     super.parseString(source, fileName, options);
     return this;
   }
-
 }
