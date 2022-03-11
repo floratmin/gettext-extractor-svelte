@@ -3,6 +3,10 @@ module.exports = {
   overrides: [
     {
       files: ['./src/**/*.ts'],
+      parser: '@typescript-eslint/parser',
+      parserOptions: {
+        project: ['./src/tsconfig.json'],
+      },
     },
     {
       files: ['./tests/**/*.test.ts'],
@@ -11,20 +15,20 @@ module.exports = {
       },
       rules: {
         '@typescript-eslint/quotes': 'off',
-      }
+      },
     },
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: ['./src/tsconfig.json'],
+    project: ['./tsconfig-base.json'],
   },
   plugins: [
     '@typescript-eslint',
     'prettier',
   ],
   extends: [
-    'prettier',
     'airbnb-typescript',
+    'prettier',
   ],
   rules: {
     'prettier/prettier': 2,
@@ -40,7 +44,6 @@ module.exports = {
     'no-unused-expressions': 'off',
     '@typescript-eslint/no-unused-expressions': 'off',
     '@typescript-eslint/quotes': ['error', 'single', { allowTemplateLiterals: true }],
-    '@typescript-eslint/indent': 'off',
     '@typescript-eslint/keyword-spacing': 'off',
   },
 };
