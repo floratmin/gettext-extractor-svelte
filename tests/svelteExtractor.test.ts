@@ -1,7 +1,7 @@
 import { SvelteGettextExtractor, callExpressionExtractor, ICustomJsExtractorOptions, FunctionExtractorBuilder } from '../src';
 import { IMessage } from 'gettext-extractor/dist/builder';
 import { HtmlExtractors } from 'gettext-extractor';
-import { TTranslatorFunction } from '../dist';
+import { TTranslatorFunction } from '../src';
 
 export function i(strings: TemplateStringsArray): string {
   const stringArray = strings[0].split('\n');

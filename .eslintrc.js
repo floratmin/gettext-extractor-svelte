@@ -3,7 +3,6 @@ module.exports = {
   overrides: [
     {
       files: ['./src/**/*.ts'],
-      parser: '@typescript-eslint/parser',
       parserOptions: {
         project: ['./src/tsconfig.json'],
       },
