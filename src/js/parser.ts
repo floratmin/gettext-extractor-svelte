@@ -79,11 +79,6 @@ export class JsParser extends Parser<IJsExtractorFunction, IParseOptions> {
     return parsed;
   }
 
-  public parseSvelteString(source: string, fileName?: string, options?: IJsParseOptions): this {
-    super.parseSvelteString(source, fileName, options);
-    return this;
-  }
-
   public addExtractor(extractor: IJsExtractorFunction): this {
     super.addExtractor(extractor);
     return this;
