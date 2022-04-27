@@ -65,8 +65,8 @@ export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> 
     return parsed;
   }
 
-  public parseSvelteString(source: string, fileName?: string, options?: IJsParseOptions): this {
-    super.parseSvelteString(source, fileName, options);
+  public parseSvelteString(source: string, fileName?: string, options?: IJsParseOptions, parseId?: string): this {
+    super.parseSvelteString(source, fileName, options, parseId);
     return this;
   }
 
@@ -85,8 +85,8 @@ export class SvelteParser extends Parser<IJsExtractorFunction, IJsParseOptions> 
     return this;
   }
 
-  public parseString(source: string, fileName?: string, options?: IJsParseOptions): this {
-    super.parseString(source, fileName, options);
+  public parseString(source: string, fileName?: string, options?: IJsParseOptions, parseId?: string): this {
+    super.parseString(source, fileName, options, parseId);
     return this;
   }
 }

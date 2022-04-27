@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as glob from 'glob';
 import * as ts from 'typescript';
 
-import { IGettextExtractorStats } from './extractor';
+import { IGettextExtractorStats, getDateId } from './extractor';
 import { IAddMessageCallback } from 'gettext-extractor/dist/parser';
 import { Validate } from 'gettext-extractor/dist/utils/validate';
 import { svelteFragmentDivider } from '@floratmin/svelte-fragment-divider';
@@ -110,28 +110,36 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
     this.validateExtractors(...extractors);
   }
 
-  public parseSvelteString(source: string, fileName?: string, options?: TParseOptions): this {
+  public parseSvelteString(source: string, fileName?: string, options?: TParseOptions, parseId?: string): this {
     const { scriptInHTMLFragments, script } = svelteFragmentDivider(source, <string>fileName);
+    parseId = parseId || getDateId();
     [...(script ? [script] : []), ...(scriptInHTMLFragments ? scriptInHTMLFragments : [])].forEach((jsFragment) => {
       jsFragment = Array.isArray(jsFragment) ? jsFragment : [jsFragment];
       jsFragment.forEach((jsFrag) => {
-        this.parseString(jsFrag.fragment, fileName, <TParseOptions>{
-          ...options,
-          ...{
-            lineNumberStart: jsFrag.startLine + (options?.lineNumberStart || 0),
-            startChar: jsFrag.startChar + (options?.startChar || 0),
+        this.parseString(
+          jsFrag.fragment,
+          fileName,
+          <TParseOptions>{
+            ...options,
+            ...{
+              lineNumberStart: jsFrag.startLine + (options?.lineNumberStart || 0),
+              startChar: jsFrag.startChar + (options?.startChar || 0),
+            },
           },
-        });
+          parseId,
+        );
       });
     });
     return this;
   }
 
-  public parseString(source: string, fileName?: string, options?: TParseOptions): this {
+  public parseString(source: string, fileName?: string, options?: TParseOptions, parseId?: string): this {
     Validate.required.string({ source });
     Validate.optional.nonEmptyString({ fileName });
     fileName = fileName || Parser.STRING_LITERAL_FILENAME;
     this.validateParseOptions(options);
+
+    parseId = parseId || getDateId();
 
     if (!this.extractors.length) {
       throw new Error(`Missing extractor functions. Provide them when creating the parser or dynamically add extractors using 'addExtractor()'`);
@@ -144,11 +152,11 @@ export abstract class Parser<TExtractorFunction extends Function, TParseOptions 
     let { messages, functionsData } = this.parse(source, fileName, options);
 
     for (let message of messages) {
-      this.builder.addMessage(message, fileName);
+      this.builder.addMessage(message, parseId);
     }
 
     for (let functionData of functionsData) {
-      this.functionBuilder.addFunction(functionData, fileName);
+      this.functionBuilder.addFunction(functionData, parseId);
     }
 
     this.stats && this.stats.numberOfParsedFiles++;

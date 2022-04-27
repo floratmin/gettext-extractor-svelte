@@ -37,6 +37,10 @@ function getAsArray<T>(obj?: T | T[]): T[] | undefined {
   return Array.isArray(obj) ? obj : [obj];
 }
 
+export function getDateId() {
+  return `${Date.now()}${Math.random()}`;
+}
+
 export class SvelteGettextExtractor {
   private stats: IGettextExtractorStats = {
     numberOfMessages: 0,
@@ -59,12 +63,12 @@ export class SvelteGettextExtractor {
   public createJsParser(extractors?: IJsExtractorFunction | IJsExtractorFunction[]): JsParser {
     Validate.optional.nonEmptyArray({ extractors });
 
-    return new JsParser(this.builder, this.functionBuilder,  getAsArray(extractors), this.stats);
+    return new JsParser(this.builder, this.functionBuilder, getAsArray(extractors), this.stats);
   }
 
   public createHtmlParser(extractors?: IHtmlExtractorFunction | IHtmlExtractorFunction[]): HtmlParser {
     Validate.optional.nonEmptyArray({ extractors });
-    return new HtmlParser(this.builder, this.functionBuilder,  getAsArray(extractors), this.stats);
+    return new HtmlParser(this.builder, this.functionBuilder, getAsArray(extractors), this.stats);
   }
 
   public createSvelteParser(extractors?: IJsExtractorFunction | IJsExtractorFunction[]): SvelteParser {
@@ -72,7 +76,7 @@ export class SvelteGettextExtractor {
     return new SvelteParser(this.builder, this.functionBuilder, getAsArray(extractors), this.stats);
   }
 
-  public addMessage(message: IMessage, fileName?: string): void {
+  public addMessage(message: IMessage, parseId?: string): void {
     if (message.text !== null) {
       Validate.required.stringProperty(message, 'message.text');
     }
@@ -88,7 +92,7 @@ export class SvelteGettextExtractor {
       Validate.required.stringProperty(message, 'message.identifier');
     }
 
-    this.builder.addMessage(message, fileName);
+    this.builder.addMessage(message, parseId || getDateId());
   }
 
   public getMessages(): IMessage[] {
@@ -119,8 +123,8 @@ export class SvelteGettextExtractor {
     return this.builder.getTransformedMessages(func);
   }
 
-  public addFunctions(functionData: IFunction, fileName?: string): void {
-    this.functionBuilder.addFunction(functionData, fileName);
+  public addFunctions(functionData: IFunction, parseId?: string): void {
+    this.functionBuilder.addFunction(functionData, parseId || getDateId());
   }
 
   public getFunctions(): IFunctionDict {

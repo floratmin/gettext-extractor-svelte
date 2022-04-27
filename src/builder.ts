@@ -42,11 +42,11 @@ export type IFunctionDict = Record<string, IFunctionDictData[]>;
 export class FunctionBuilder {
   private context: IFunctionDict = {};
 
-  private lastFileName: string | undefined;
+  private lastParseId: string | undefined;
 
   private lastFunctions: IFunctionDictData[] = [];
 
-  public addFunction(functionData: IFunction, fileName?: string): void {
+  public addFunction(functionData: IFunction, parseId: string): void {
     const functionDictData: IFunctionDictData = <IFunctionDictData>{
       functionString: functionData.functionString,
       functionData: functionData.functionData,
@@ -60,8 +60,8 @@ export class FunctionBuilder {
     } else {
       this.context[functionData.fileName] = [functionDictData];
     }
-    if (this.lastFileName !== fileName) {
-      this.lastFileName = fileName;
+    if (this.lastParseId !== parseId) {
+      this.lastParseId = parseId;
       this.lastFunctions = [<IFunctionDictData>functionDictData];
     } else {
       this.lastFunctions.push(<IFunctionDictData>functionDictData);
@@ -86,7 +86,7 @@ export class FunctionBuilder {
 export class CatalogBuilder {
   private contexts: IContextMap = {};
 
-  private lastFileName: string | undefined;
+  private lastParseId: string | undefined;
 
   private lastMessages: IMessage[] = [];
 
@@ -130,7 +130,7 @@ export class CatalogBuilder {
 
   constructor(private stats?: IGettextExtractorStats) {}
 
-  public addMessage(message: Partial<IMessage>, fileName?: string): void {
+  public addMessage(message: Partial<IMessage>, parseId: string): void {
     message = CatalogBuilder.normalizeMessage(message);
     let context = this.getOrCreateContext(message.context || '');
     if (context[message.text!]) {
@@ -151,8 +151,8 @@ export class CatalogBuilder {
         this.stats && this.stats.numberOfPluralMessages++;
       }
     }
-    if (this.lastFileName !== fileName) {
-      this.lastFileName = fileName;
+    if (this.lastParseId !== parseId) {
+      this.lastParseId = parseId;
       this.lastMessages = [<IMessage>message];
     } else {
       this.lastMessages.push(<IMessage>message);

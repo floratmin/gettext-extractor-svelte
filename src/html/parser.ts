@@ -82,8 +82,8 @@ export class HtmlParser extends Parser<IHtmlExtractorFunction, IParseOptions> {
     return this;
   }
 
-  public parseString(source: string, fileName?: string, options?: IJsParseOptions): this {
-    super.parseString(source, fileName, options);
+  public parseString(source: string, fileName?: string, options?: IJsParseOptions, parseId?: string): this {
+    super.parseString(source, fileName, options, parseId);
     return this;
   }
 }
