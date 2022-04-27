@@ -49,7 +49,7 @@ extractor.createSvelteParser()
 
 const messages = extractor.getMessages();
 const functionDict = extractor.getFunctions();
-const messageDict = extractor.getMessageDict();
+const messageDict = extractor.getMessageDictionary();
 ```
 From the following svelte file named `src/App.svelte`:
 ```sveltehtml
