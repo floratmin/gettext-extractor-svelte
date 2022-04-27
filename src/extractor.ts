@@ -32,6 +32,11 @@ interface IHeaders {
   [name: string]: string;
 }
 
+function getAsArray<T>(obj?: T | T[]): T[] | undefined {
+  if (obj === undefined) return;
+  return Array.isArray(obj) ? obj : [obj];
+}
+
 export class SvelteGettextExtractor {
   private stats: IGettextExtractorStats = {
     numberOfMessages: 0,
@@ -51,20 +56,20 @@ export class SvelteGettextExtractor {
     this.functionBuilder = new FunctionBuilder();
   }
 
-  public createJsParser(extractors?: IJsExtractorFunction[]): JsParser {
+  public createJsParser(extractors?: IJsExtractorFunction | IJsExtractorFunction[]): JsParser {
     Validate.optional.nonEmptyArray({ extractors });
 
-    return new JsParser(this.builder, this.functionBuilder, extractors, this.stats);
+    return new JsParser(this.builder, this.functionBuilder,  getAsArray(extractors), this.stats);
   }
 
-  public createHtmlParser(extractors?: IHtmlExtractorFunction[]): HtmlParser {
+  public createHtmlParser(extractors?: IHtmlExtractorFunction | IHtmlExtractorFunction[]): HtmlParser {
     Validate.optional.nonEmptyArray({ extractors });
-    return new HtmlParser(this.builder, this.functionBuilder, extractors, this.stats);
+    return new HtmlParser(this.builder, this.functionBuilder,  getAsArray(extractors), this.stats);
   }
 
-  public createSvelteParser(extractors?: IJsExtractorFunction[]): SvelteParser {
+  public createSvelteParser(extractors?: IJsExtractorFunction | IJsExtractorFunction[]): SvelteParser {
     Validate.optional.nonEmptyArray({ extractors });
-    return new SvelteParser(this.builder, this.functionBuilder, extractors, this.stats);
+    return new SvelteParser(this.builder, this.functionBuilder, getAsArray(extractors), this.stats);
   }
 
   public addMessage(message: IMessage, fileName?: string): void {
