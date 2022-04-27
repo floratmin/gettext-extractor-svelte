@@ -73,7 +73,9 @@ export class FunctionBuilder {
   }
 
   public getLastAddedFunctions(): IFunctionDictData[] {
-    return this.lastFunctions;
+    const lastFunctions = this.lastFunctions;
+    this.lastFunctions = [];
+    return lastFunctions;
   }
 
   public getFunctionsByFileName(fileName: string): IFunctionDictData[] {
@@ -173,7 +175,9 @@ export class CatalogBuilder {
   }
 
   public getLastAddedMessages(): IMessage[] {
-    return this.lastMessages;
+    const lastMessages = this.lastMessages;
+    this.lastMessages = [];
+    return lastMessages;
   }
 
   public getMessageDictionary(): Record<string, string> {

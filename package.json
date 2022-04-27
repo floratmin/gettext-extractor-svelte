@@ -1,6 +1,6 @@
 {
   "name": "gettext-extractor-svelte",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "gettext-extractor for svelte files",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
