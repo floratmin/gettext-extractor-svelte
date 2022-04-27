@@ -408,6 +408,7 @@ function getComments(
           comments.otherComments.push(...commentsArray.map((line) => `${nextKey}: ${line}`));
         }
       } else if (isObjectLiteralExpression(value)) {
+        if (isProp) throw new Error(`Key ${nextKey} at ${message.text} with id "${message.context}" has invalid value. Allowed is only string.`);
         if (!prevKey && (<string[]>propsKeys).includes(key)) {
           getComments(value, key, commentOptions, comments, message, true, propsKeys);
         } else {
