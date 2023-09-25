@@ -95,73 +95,76 @@ function getFunctionFromNode(node: ts.Node, nodeFinder: FunctionExtractor): Char
     const m = <any>node;
     return Object.entries(nodeFinder)
       .filter(([prop, _]) => prop !== 'kind')
-      .reduce((all, entry) => {
-        if (all) {
-          const [prop, value] = entry;
-          if ((['name', 'left', 'moduleSpecifier'].includes(prop) || (prop === 'expression' && m[prop].text)) && value) {
-            const c = <TextNode>value;
-            const textProp = <'name' | 'left'>prop;
-            if (nodeFinder[textProp] && nodeFinder[textProp]?.kind === c.kind) {
-              if (m[textProp] && c.text === m[textProp].text) {
-                return all;
-              } else {
-                return false;
+      .reduce(
+        (all, entry) => {
+          if (all) {
+            const [prop, value] = entry;
+            if ((['name', 'left', 'moduleSpecifier'].includes(prop) || (prop === 'expression' && m[prop].text)) && value) {
+              const c = <TextNode>value;
+              const textProp = <'name' | 'left'>prop;
+              if (nodeFinder[textProp] && nodeFinder[textProp]?.kind === c.kind) {
+                if (m[textProp] && c.text === m[textProp].text) {
+                  return all;
+                } else {
+                  return false;
+                }
               }
-            }
-          } else if (prop === 'getPos') {
-            all = [...all, { pos: <number>m.pos, end: <number>m.end }];
-            return all;
-          } else if (['properties', 'members'].includes(prop) && value) {
-            const foundNodes = (<FunctionExtractor[]>value).flatMap((v) =>
-              m[prop].map((p: any) => getFunctionFromNode(p, v)).filter((s: any) => s && s.length > 0),
-            );
-            if (foundNodes) {
-              return [...all, ...foundNodes.flatMap((nodes) => <CharPos>nodes).filter((pos) => pos)];
-            }
-          } else if (['elements'].includes(prop) && value) {
-            let foundNodes = (<FunctionExtractor[]>value).flatMap((v) => m[prop].map((p: any) => getFunctionFromNode(p, v)));
-            if (foundNodes.some((s) => s)) {
-              foundNodes = foundNodes.filter((s: any) => s && s.length > 0);
+            } else if (prop === 'getPos') {
+              all = [...all, { pos: <number>m.pos, end: <number>m.end }];
+              return all;
+            } else if (['properties', 'members'].includes(prop) && value) {
+              const foundNodes = (<FunctionExtractor[]>value).flatMap((v) =>
+                m[prop].map((p: any) => getFunctionFromNode(p, v)).filter((s: any) => s && s.length > 0),
+              );
               if (foundNodes) {
                 return [...all, ...foundNodes.flatMap((nodes) => <CharPos>nodes).filter((pos) => pos)];
               }
-            }
-          } else if (prop === 'importClause' && value) {
-            let foundName: false | CharPos = false;
-            const name = (<FunctionExtractor>value).name;
-            if (name) {
-              if (m[prop].name) {
-                const { text } = <ts.Identifier>m[prop].name;
-                if (text === name.text) {
-                  foundName = [];
+            } else if (['elements'].includes(prop) && value) {
+              let foundNodes = (<FunctionExtractor[]>value).flatMap((v) => m[prop].map((p: any) => getFunctionFromNode(p, v)));
+              if (foundNodes.some((s) => s)) {
+                foundNodes = foundNodes.filter((s: any) => s && s.length > 0);
+                if (foundNodes) {
+                  return [...all, ...foundNodes.flatMap((nodes) => <CharPos>nodes).filter((pos) => pos)];
                 }
               }
-            }
-            let foundElements: false | CharPos = false;
-            if (m[prop].namedBindings && (<ts.ImportClause>value).namedBindings) {
-              foundElements =
-                (<ts.ImportClause>value).namedBindings && m[prop].namedBindings
-                  ? getFunctionFromNode(m[prop].namedBindings, <FunctionExtractor>(<ts.ImportClause>value).namedBindings)
-                  : false;
-            }
-            if ((<FunctionExtractor>value).getPos) {
-              all = [...all, { pos: <number>m[prop].pos, end: <number>m[prop].end }];
-            }
-            if (foundElements && (!name || foundName)) {
-              return [...all, ...foundElements];
-            }
-            if (foundName || (!name && !(<ImportClause>value).namedBindings)) {
-              return all;
-            }
-          } else {
-            const foundNodes = getFunctionFromNode(m[prop], <FunctionExtractor>value);
-            if (foundNodes && foundNodes.every((n) => n)) {
-              return [...all, ...foundNodes];
+            } else if (prop === 'importClause' && value) {
+              let foundName: false | CharPos = false;
+              const name = (<FunctionExtractor>value).name;
+              if (name) {
+                if (m[prop].name) {
+                  const { text } = <ts.Identifier>m[prop].name;
+                  if (text === name.text) {
+                    foundName = [];
+                  }
+                }
+              }
+              let foundElements: false | CharPos = false;
+              if (m[prop].namedBindings && (<ts.ImportClause>value).namedBindings) {
+                foundElements =
+                  (<ts.ImportClause>value).namedBindings && m[prop].namedBindings
+                    ? getFunctionFromNode(m[prop].namedBindings, <FunctionExtractor>(<ts.ImportClause>value).namedBindings)
+                    : false;
+              }
+              if ((<FunctionExtractor>value).getPos) {
+                all = [...all, { pos: <number>m[prop].pos, end: <number>m[prop].end }];
+              }
+              if (foundElements && (!name || foundName)) {
+                return [...all, ...foundElements];
+              }
+              if (foundName || (!name && !(<ImportClause>value).namedBindings)) {
+                return all;
+              }
+            } else {
+              const foundNodes = getFunctionFromNode(m[prop], <FunctionExtractor>value);
+              if (foundNodes && foundNodes.every((n) => n)) {
+                return [...all, ...foundNodes];
+              }
             }
           }
-        }
-        return false;
-      }, <CharPos | false>[]);
+          return false;
+        },
+        <CharPos | false>[],
+      );
   }
   return false;
 }
