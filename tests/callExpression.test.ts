@@ -1,6 +1,6 @@
 import { callExpressionExtractor, ICustomJsExtractorOptions } from '../src';
 import { CatalogBuilder, IMessage } from 'gettext-extractor/dist/builder';
-import { JsParser } from 'gettext-extractor/dist/js/parser';
+import { IJsExtractorFunction, JsParser } from 'gettext-extractor/dist/js/parser';
 
 describe('JS: Call Expression Extractor with comment function', () => {
   let builder: CatalogBuilder, parser: JsParser, messages: IMessage[];
@@ -16,7 +16,7 @@ describe('JS: Call Expression Extractor with comment function', () => {
 
   describe('test js extractor function', () => {
     function createParser(calleeName: string | string[], options: ICustomJsExtractorOptions): JsParser {
-      return new JsParser(builder, [callExpressionExtractor(calleeName, options)]);
+      return new JsParser(builder, [<IJsExtractorFunction>(<unknown>callExpressionExtractor(calleeName, options))]);
     }
     describe('Test comment options', () => {
       test('Test comment options parsing', () => {

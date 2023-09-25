@@ -470,7 +470,7 @@ function isNullOrObjectLiteralOrTextLiteral(expression: ts.Expression): boolean 
 }
 
 function createStringLiteral(text: string): ts.StringLiteral {
-  const node = <ts.StringLiteral>ts.createNode(ts.SyntaxKind.StringLiteral, -1, -1);
+  const node = ts.factory.createStringLiteral(text);
   node.text = text;
   return node;
 }

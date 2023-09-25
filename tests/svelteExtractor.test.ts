@@ -2,6 +2,7 @@ import { SvelteGettextExtractor, callExpressionExtractor, ICustomJsExtractorOpti
 import { IMessage } from 'gettext-extractor/dist/builder';
 import { HtmlExtractors } from 'gettext-extractor';
 import { TTranslatorFunction } from '../src';
+import { IHtmlExtractorFunction } from '../src/html/parser';
 
 export function i(strings: TemplateStringsArray): string {
   const stringArray = strings[0].split('\n');
@@ -1733,13 +1734,11 @@ export class Foo {
         `;
     const extractor = new SvelteGettextExtractor();
     extractor
-      .createHtmlParser([
-        HtmlExtractors.elementContent('[translate]', {
+      .createHtmlParser([<IHtmlExtractorFunction>(<unknown>HtmlExtractors.elementContent('[translate]', {
           attributes: {
             context: 'translate-context',
           },
-        }),
-      ])
+        }))])
       .parseString(htmlFile, 'src/index.html');
     expect(extractor.getMessages()).toEqual([
       {
