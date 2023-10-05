@@ -1,6 +1,6 @@
 {
   "name": "gettext-extractor-svelte",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "gettext-extractor for svelte files",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,7 +36,7 @@
   "author": "Florian Murat Koch <florian.murat.koch@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@floratmin/svelte-fragment-divider": "^4.4.1",
+    "@floratmin/svelte-fragment-divider": "^4.5.0",
     "gettext-extractor": "^3.8.0",
     "pofile": "^1.1.4",
     "svelte": "^4.2.1"
